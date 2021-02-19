@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>
+			QuoridorIA
+		</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"></link>
+		<script src="js/script.js"></script>
+		<script src="js/slide_history.js"></script>
+		<link rel="stylesheet" href="css/board.css"></link>
+		<link rel="stylesheet" href="css/history.css"></link>
+	</head>
+	<body>
+		<div class="app"></div>
+		<div class="debug" ng-app></div>
+		<div id='mov'>
+			<span class='head_move' onclick='Sliding()' >
+				Historique
+			</span>
+			<textarea id='movement' cols='38' rows='28' style='text-align:left; cursor:default; height:478px;resize:none' disabled></textarea>
+			<div id='print' style='display:none;margin: 0 0 0 50px;'>
+				<input type='button' value='Restart' onclick='location.reload()'>
+			</div>
+		</div>
+	</body>
+</html>

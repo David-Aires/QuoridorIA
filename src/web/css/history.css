@@ -1,0 +1,35 @@
+
+
+textarea {
+	border:#00386b 1px solid;
+	color:gray;
+	margin:21px 0 0 0;
+	z-index:1;
+	visibility:visible;
+	opacity:1;
+	filter:alpha(opacity=100);
+	background:#fff;
+}
+
+#mov {
+	width:320px;
+	float:left;
+	position:absolute;
+	left:900px;
+}
+
+.head_move {
+	text-align:center;
+	padding:3px 5px 0px 5px;
+	border:#00386b 1px solid;
+	border-bottom:none;
+	color:#0000FF;
+	text-align:center;
+	font-weight:bold;
+	font-size:14px;
+	letter-spacing:1px;
+	z-index:2;
+	position:absolute;
+	cursor:pointer;
+	background:#fff;
+}

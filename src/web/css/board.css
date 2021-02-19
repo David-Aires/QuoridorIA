@@ -1,0 +1,85 @@
+body{
+	margin:0;
+	padding:0;
+	z-index:0;
+}
+
+.border-row {
+	 height: 5px;
+}
+.border-row .border-h {
+	 width: 54px;
+	 background: #a76c68;
+	 height: 10px;
+	 display: inline-block;
+	 float: left;
+}
+div {
+	 margin: 0 auto;
+	 width: 495px;
+}
+.row {
+	 height: 45px;
+}
+div[class*="row"] span {
+	 display: block;
+	 float: left;
+	 height: 45px;
+	 width: 45px;
+	 background: #4d535f;
+}
+div[class*="row"] span.border-v {
+	 background: #a76c68;
+	 width: 10px;
+}
+span {
+	 position: relative;
+	 display: inline-block;
+	 transition: all 0.5s;
+}
+span.border-v:hover, span.border-h:hover {
+	 background: green !important;
+	 cursor: pointer;
+}
+span.cell:hover {
+	 cursor: pointer;
+	 animation: hover 1s infinite alternate;
+	 transition: all 1s;
+	 background: red !important;
+	 transform: rotate(70deg);
+}
+span.border-h:hover {
+	 background: green !important;
+}
+span.border-h:hover + span {
+	 background: green !important;
+}
+@keyframes hover {
+	from {
+		 transform: scale(1);
+		 opacity: 1;
+	}
+	to {
+		 transform: scale(1.1);
+		 opacity: 0.5;
+	}
+}
+.active {
+	 background: yellow !important;
+}
+.blocked {
+	 background: lightgreen !important;
+}
+.hover {
+	 background: green !important;
+}
+.app {
+	z-index:15;
+	top:10px;
+	left:320px;
+	text-align:center;
+	opacity:1;
+	cursor:default;
+	position:absolute;
+}
+ 
