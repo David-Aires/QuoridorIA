@@ -6,16 +6,13 @@ textarea {
 	margin:21px 0 0 0;
 	z-index:1;
 	visibility:visible;
-	opacity:1;
+	opacity:0.33;
 	filter:alpha(opacity=100);
 	background:#fff;
 }
 
 #mov {
 	width:320px;
-	float:left;
-	position:absolute;
-	left:900px;
 }
 
 .head_move {
@@ -23,7 +20,7 @@ textarea {
 	padding:3px 5px 0px 5px;
 	border:#00386b 1px solid;
 	border-bottom:none;
-	color:#0000FF;
+	color:black;
 	text-align:center;
 	font-weight:bold;
 	font-size:14px;
@@ -32,4 +29,5 @@ textarea {
 	position:absolute;
 	cursor:pointer;
 	background:#fff;
+	opacity: 0.33;
 }
