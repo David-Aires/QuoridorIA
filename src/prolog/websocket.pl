@@ -1,3 +1,5 @@
+:- include('chatbot.pl').
+
 % INSTRUCTIONS
 % =swipl echo-server.pl=
 % =:- start_server.=
