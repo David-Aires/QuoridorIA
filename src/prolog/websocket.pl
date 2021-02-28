@@ -1,5 +1,3 @@
-:- include('chatbot.pl').
-
 % INSTRUCTIONS
 % =swipl echo-server.pl=
 % =:- start_server.=
@@ -20,6 +18,8 @@
 :- use_module(library(http/websocket)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/http_server_files)).
+:- use_module(library(lists)).
+:- include('chatbot.pl').
 
 http:location(js,	root(js), []).
 http:location(css,	root(css), []).
@@ -92,5 +92,5 @@ echo(WebSocket) :-
 % then add the current time, then pass it back up to be sent to the
 % client
 get_response(Message, Response) :-
-  get_time(Time),
-  Response = _{message:Message.message, time: Time}.
+  quoridoria(Message.message,Solution),
+  Response = _{message:Solution}.

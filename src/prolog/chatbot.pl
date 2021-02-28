@@ -36,7 +36,7 @@ produire_reponse(L,Rep) :-
 
 produire_reponse(_,[L1,L2, L3]) :-
    L1 = [je, ne, sais, pas, '.'],
-   L2 = [les, etudiants, vont, m, '\'', aider, '.' ],
+   L2 = [les, etudiants, vont, 'm\'aider', '.' ],
    L3 = ['vous le verrez !'].
 
 match_pattern(Pattern,Lmots) :-
@@ -106,8 +106,8 @@ regle_rep(barrieres,5,
 
 regle_rep(sauter,6,
    [ puisje, sauter, audessus, dun, pion],
-   [  ["oui,", "s'il", "n'est", pas, suivi, "d'un", autre, pion, ou],
-      ["d'une", "barriere."]]).
+   [  ["oui,", "s'il", "n'est", pas, suivi, "d'un", autre, pion, ou,
+       "d'une", "barriere."]]).
 
 % ----------------------------------------------------------------%
 
@@ -138,9 +138,9 @@ regle_rep(bleu,8,
 /*                                                                       */
 /* --------------------------------------------------------------------- */
 
-% lire_question(L_Mots) 
+% lire_question(L_Mots,Input)
 
-lire_question(LMots) :- read_atomics(LMots).
+lire_question(LMots,Input) :- read_atomics(LMots,Input).
 
 
 
@@ -172,23 +172,6 @@ lower_case(X,Y) :-
 	Y is X + 32, !.
 
 lower_case(X,X).
-
-
-/*****************************************************************************/
-% read_lc_string(-String)
-%  Reads a line of input into String as a list of ASCII codes,
-%  with all capital letters changed to lower case.
-
-read_lc_string(String) :-
-	get0(FirstChar),
-	lower_case(FirstChar,LChar),
-	read_lc_string_aux(LChar,String).
-
-read_lc_string_aux(10,[]) :- !.  % end of line
-
-read_lc_string_aux(-1,[]) :- !.  % end of file
-
-read_lc_string_aux(LChar,[LChar|Rest]) :- read_lc_string(Rest).
 
 
 /*****************************************************************************/
@@ -306,8 +289,8 @@ clean_string([C|[]],[C]).
 %  Reads a line of input, removes all punctuation characters, and converts
 %  it into a list of atomic terms, e.g., [this,is,an,example].
 
-read_atomics(ListOfAtomics) :-
-	read_lc_string(String),
+read_atomics(ListOfAtomics,Input) :-
+	string_to_list(Input,String),
 	clean_string(String,Cleanstring),
 	extract_atomics(Cleanstring,ListOfAtomics).
 
@@ -318,69 +301,23 @@ read_atomics(ListOfAtomics) :-
 /*        ECRIRE_REPONSE : ecrit une suite de lignes de texte            */
 /*                                                                       */
 /* --------------------------------------------------------------------- */
+get_list_string([],[]).
+get_list_string([L|Ls],Result):- init_txt(L,Response),get_list_string(Ls,Result2),append(Response,Result2,Result).
 
-ecrire_reponse(L) :-
-   nl, write('QBot :'),
-   ecrire_li_reponse(L,1,1).
+init_txt([],[]).
+init_txt([L|Ls],["\n",R,' '|Xs]):- upper(L,R),create_txt(Ls,Xs).
 
-% ecrire_li_reponse(Ll,M,E)
-% input : Ll, liste de listes de mots (tout en minuscules)
-%         M, indique si le premier caractere du premier mot de 
-%            la premiere ligne doit etre mis en majuscule (1 si oui, 0 si non)
-%         E, indique le nombre d'espaces avant ce premier mot 
-
-ecrire_li_reponse([],_,_) :- 
-    nl.
-
-ecrire_li_reponse([Li|Lls],Mi,Ei) :- 
-   ecrire_ligne(Li,Mi,Ei,Mf),
-   ecrire_li_reponse(Lls,Mf,2).
-
-% ecrire_ligne(Li,Mi,Ei,Mf)
-% input : Li, liste de mots a ecrire
-%         Mi, Ei booleens tels que decrits ci-dessus
-% output : Mf, booleen tel que decrit ci-dessus a appliquer 
-%          a la ligne suivante, si elle existe
-
-ecrire_ligne([],M,_,M) :- 
-   nl.
-
-ecrire_ligne([M|L],Mi,Ei,Mf) :-
-   ecrire_mot(M,Mi,Maux,Ei,Eaux),
-   ecrire_ligne(L,Maux,Eaux,Mf).
-
-% ecrire_mot(M,B1,B2,E1,E2)
-% input : M, le mot a ecrire
-%         B1, indique s'il faut une majuscule (1 si oui, 0 si non)
-%         E1, indique s'il faut un espace avant le mot (1 si oui, 0 si non)
-% output : B2, indique si le mot suivant prend une majuscule
-%          E2, indique si le mot suivant doit etre precede d'un espace
-
-ecrire_mot('.',_,1,_,1) :-
-   write('. '), !.
-ecrire_mot('\'',X,X,_,0) :-
-   write('\''), !.
-ecrire_mot(',',X,X,E,1) :-
-   espace(E), write(','), !.
-ecrire_mot(M,0,0,E,1) :-
-   espace(E), write(M).
-ecrire_mot(M,1,0,E,1) :-
-   name(M,[C|L]),
-   D is C - 32,
-   name(N,[D|L]),
-   espace(E), write(N).
-
-espace(0).
-espace(N) :- N>0, Nn is N-1, write(' '), espace(Nn).
+create_txt([],[]).
+create_txt([L|[]],[L|[]]).
+create_txt([L,.|Ls],[L,.|Xs]):- create_txt(Ls,Xs).
+create_txt([L|Ls],[L,' '|Xs]):- create_txt(Ls,Xs).
 
 
-/* --------------------------------------------------------------------- */
-/*                                                                       */
-/*                            TEST DE FIN                                */
-/*                                                                       */
-/* --------------------------------------------------------------------- */
+upper(String,R):- string_codes(String,Code),capitalize(Code,UpCode),atom_codes(R,UpCode).
 
-fin(L) :- member(fin,L).
+capitalize([], []).
+capitalize([H1|T], [H2|T]):-
+  code_type(H2, to_upper(H1)).
 
 
 /* --------------------------------------------------------------------- */
@@ -389,20 +326,14 @@ fin(L) :- member(fin,L).
 /*                                                                       */
 /* --------------------------------------------------------------------- */
 
-quoridoria :- 
+quoridoria(Input,Solution) :-
+    lire_question(L_Mots,Input),
+    produire_reponse(L_Mots,L_ligne_reponse),
+    get_list_string(L_ligne_reponse,Txt),
+    atomic_list_concat(Txt,Solution).
 
-   nl, nl, nl,
-   write('Bonjour, je suis QBot, le bot explicateur de QuoridorIA.'), nl,
-   write('En quoi puis-je vous aider ?'), 
-   nl, nl, 
 
-   repeat,
-      write('Vous : '), ttyflush,
-      lire_question(L_Mots),
-      produire_reponse(L_Mots,L_ligne_reponse),
-      ecrire_reponse(L_ligne_reponse),
-   fin(L_Mots), !.
-   
+
 
 /* --------------------------------------------------------------------- */
 /*                                                                       */
@@ -410,4 +341,3 @@ quoridoria :-
 /*                                                                       */
 /* --------------------------------------------------------------------- */
 
-:- quoridoria.

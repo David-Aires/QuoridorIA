@@ -87,14 +87,13 @@ $(document).on('keydown','.console-input', function(event) {
             } else if (result instanceof Promise) {
                 result.then(output)
             } else {
-                console.log(result)
                 output(result)
             }
         } else if (cmd.trim() === '') {
             output('')
         } else {
             const payload = {
-                message: cmd
+                message: text
             }
             sendMessage(JSON.stringify(payload))
         }
