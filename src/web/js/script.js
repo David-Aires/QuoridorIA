@@ -5,10 +5,10 @@ var current= [8,8];
 var blockers = 0;
 var maxBlockers = 9;
 
-$(document).on('click', '.cell', function(e){ 
+$(document).on('click', '.cell', function(e){
   var $this = $(this);
   var clicked = [];
-  var info = $this.data('cell').split('-'); 
+  var info = $this.data('cell').split('-');
   var row = info[0];
   var cell = info[1];
   
@@ -40,12 +40,22 @@ $(document).on('click', '.cell', function(e){
   }  
 });
 
-$(document).on('mousedown', '.border-v, .border-h', function(e){ 
+$(document).on('click', '.border-v, .border-h', function(e){
+  var info_classe = ($(this).attr('class'));
+  var info = $(this).data(info_classe).split('-');
   blockers++;
   if ( blockers > maxBlockers ) return;
-  $( $(this).addClass('blocked').next('.border-h').addClass('blocked') )
+  if (info_classe == 'border-h') {
+    if (info[1] == '8') $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
+    $($(this).addClass('blocked').next('.border-h').addClass('blocked'))
+
+  else {
+    $($(this).addClass('blocked'));
+    if (info[0] == '8') $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').addClass('blocked');
+    $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
+  }
 });
-                        
+
 var arr = [];
  
 for(var h =0; h < 9; h++){
@@ -84,7 +94,7 @@ for (var i = 0; i < arr.length; i++) {
     html +='<div class="border-row">'; 
   
     for (var ll = 0; ll <9; ll++) {
-      html += '<span class="border-h" border-h='+i+'-'+ll+'></span>';
+      html += '<span class="border-h" data-border-h='+i+'-'+ll+'></span>';
     }
 
     html += '</div>';
@@ -113,18 +123,6 @@ function hoverFunct(){
   var info = $this.data('border-v').split('-');  
   $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').toggleClass('hover');  
 };
-
-
-$(document).on('click','.border-v', clickFunc);
-
-function clickFunc(){ 
-  if ( blockers > maxBlockers ) return;
-  var $this = $(this);
-  var info = $this.data('border-v').split('-');  
-  $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').toggleClass('blocked'); 
-  blockers++;
-}; 
-
 
 
 
