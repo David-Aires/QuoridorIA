@@ -83,9 +83,22 @@ span.border-h:hover + span {
 		 opacity: 0.5;
 	}
 }
-.active {
+.active_yellow {
 	 background: yellow !important;
 }
+
+.active_red {
+	background: red !important;
+}
+
+.active_green {
+	background: darkgreen !important;
+}
+
+.active_blue {
+	background: blue !important;
+}
+
 .blocked {
 	 background: lightgreen !important;
 }

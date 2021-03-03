@@ -9,6 +9,8 @@
 		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.1.0/markdown-it.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.18/autosize.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+		<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 		<script src="https://unpkg.com/@wmhilton/cli-parser@1.1.0"></script>
 
 		<script src="js/websocket.js"></script>
@@ -20,6 +22,8 @@
 		<link rel="stylesheet" href="css/board.css">
 		<link rel="stylesheet" href="css/history.css">
 		<link rel="stylesheet" href="css/console.css">
+		<link rel="stylesheet" href="css/card.css">
+        <link rel="stylesheet" href="css/vivify.min.css">
 	</head>
 	<body>
 		<div class="container">
@@ -30,13 +34,45 @@
 				<span class='head_move' onclick='Sliding()' >
 					Historique
 				</span>
-				<textarea id='movement' cols='38' rows='28' style='text-align:left; cursor:default; height:465px;resize:none' disabled></textarea>
+				<div id='movement' cols='38' rows='28' style='text-align:left; cursor:default; height:465px;width: 280px;resize:none' disabled></div>
 				<div id='print' style='display:none;margin: 0 0 0 50px;'>
 					<input type='button' value='Restart' onclick='location.reload()'>
 				</div>
 			</history>
 			<main class="app"></main>
-			<aside class="debug element" ng-app></aside>
+			<aside>
+				<div class="vivify unfold" id="cards">
+
+					<figure class="card card--blue">
+						<div class="card__image-container">
+							<i class='fas fa-ghost'></i>
+						</div>
+
+						<figcaption class="card__caption">
+							<h1 class="card__name"></h1>
+
+							<h3 class="card__type">
+								joueur
+							</h3>
+
+							<table class="card__stats">
+								<tbody><tr>
+									<th>X</th>
+									<td id="pos_X">0</td>
+								</tr>
+								<tr>
+									<th>Y</th>
+									<td id="pos_Y">8</td>
+								</tr>
+								<tr>
+									<th>Wall</th>
+									<td id="wall">5</td>
+								</tr>
+								</tbody></table>
+						</figcaption>
+					</figure>
+				</div>
+			</aside>
 			<console>
 				<div class='console'>
 					<div class='console-inner'>

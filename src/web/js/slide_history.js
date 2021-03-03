@@ -1,7 +1,13 @@
 var y = 500;
 var GoOn = 1;
+
+$.fn.scrollBottom = function() {
+	return $(document).height() - this.scrollTop() - this.height();
+};
+
+
 function SlideUp(){
-	var obj = document.getElementById("movement");
+	let obj = document.getElementById("movement");
 	GoOn=0;
 	y -=20;
 	obj.style.height = y+"px";
@@ -14,7 +20,7 @@ function SlideUp(){
 	scroll();
 }
 function SlideDown() {
-	var obj = document.getElementById("movement");
+	let obj = document.getElementById("movement");
 	y +=20;
 	GoOn=0;
 	obj.style.height = y+"px";
@@ -36,6 +42,6 @@ function Sliding(){
 
 function scroll()
 {
-	textarea = document.getElementById("movement");
-	textarea.scrollTop = textarea.scrollHeight;
+	let textarea = document.getElementById("movement");
+	textarea.scrollBottom();
 }

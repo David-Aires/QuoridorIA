@@ -1,14 +1,15 @@
 
 
-textarea {
+div#movement {
 	border:#00386b 1px solid;
-	color:gray;
+	color:black;
 	margin:21px 0 0 0;
 	z-index:1;
 	visibility:visible;
 	opacity:0.33;
 	filter:alpha(opacity=100);
 	background:#fff;
+	overflow: auto;
 }
 
 #mov {
@@ -30,4 +31,8 @@ textarea {
 	cursor:pointer;
 	background:#fff;
 	opacity: 0.33;
+}
+
+#movement div {
+	margin-bottom: 10px;
 }
