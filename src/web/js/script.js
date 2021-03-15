@@ -100,8 +100,6 @@ $(document).on('click', '.cell', function(e){
 $(document).on('click', '.border-v, .border-h', function(e){
   var info_classe = ($(this).attr('class'));
   var info = $(this).data(info_classe).split('-');
-  blockers++;
-  if ( blockers > maxBlockers ) return;
   if (info_classe == 'border-h') {
     if (info[1] == '8') {
       $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
@@ -194,13 +192,26 @@ Action lors de passsage sur une bordure:
   - Ajoute la classe hover ou la retire (toggle)
 */
 
-$(document).on("mouseenter mouseleave",'.border-v', hoverFunct);
+$(document).on("mouseenter mouseleave",'.border-v', hoverFunct_V);
+$(document).on("mouseenter mouseleave",'.border-H', hoverFunct_H);
 
-function hoverFunct(){
-  var $this = $(this);
-  var info = $this.data('border-v').split('-');  
-  $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').toggleClass('hover');  
-};
+function hoverFunct_H(){
+    var info = $(this).data('border-h').split('-');
+    if (info[1] == '8') {
+        $($(this).toggleClass('hover').prev('.border-h').toggleClass('hover'));
+    } else {
+        $($(this).toggleClass('hover').next('.border-h').toggleClass('hover'));
+    }
+}
+
+function hoverFunct_V() {
+        var info = $(this).data('border-v').split('-');
+        if (info[0] == '8') {
+            $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').toggleClass('hover');
+        } else {
+            $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').toggleClass('hover');
+        }
+}
 
 
 
