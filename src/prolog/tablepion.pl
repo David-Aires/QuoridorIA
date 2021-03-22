@@ -37,50 +37,56 @@ barr(X,Y,C,D):-coorB(X,Y,D),couleur(C).
 testAllBarr([]).                                                                               
 testAllBarr([(X,Y,C,D)|S]):-coorB(X,Y,D),couleur(C),testAllBarr(S). 
 
+isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=0,member((X1,Y1,_,1),Z),member((B,Y1,_,1),Z).
+isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=1,member((B,Y1,_,0),Z),member((X1,A,_,0),Z).
+
+
 isBlocked((X1,Y1),_,Ls2,(X2,_)):- not(X2 = X1),member((X1,Y1,_,_),Ls2).
 isBlocked((X1,Y1),Ls1,_,(_,Y2)):- not(Y2 = Y1),member((X1,Y1,_,_),Ls1).
 
 isBorderUp(X,Y,D):-D=0,Y=9;D=1,X=9.
 isBorderDown(X,Y,D):-D=0,Y=1;D=1,X=9.
-isLocked(Z,Z1,(X,Y,C,D)):- isLocked1(Z,Z1,(X,Y,_,D),(X,Y,_,D)),isLocked2(Z,Z1,(X,Y,_,D),(X,Y,_,D)),barr(X,Y,C,D).
-isLocked1(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D));(D=0,moveUp(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLocked1(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D));(D=1,moveRight(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLocked2(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D));(D=1,moveLeft(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLocked2(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D));(D=0,moveDown(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLockedA(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D);(XO=X,YO=Y,DO=D));(D=0,moveUp(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLockedA(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D);(XO=X,YO=Y,DO=D));(D=1,moveRight(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLockedB(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D);(XO=X,YO=Y,DO=D));(D=1,moveLeft(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-isLockedB(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D);(XO=X,YO=Y,DO=D));(D=0,moveDown(Z,Z1,(X,Y,_,D),(XO,YO,_,DO))).
-moveUp(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedUp(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveUp(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedRightUp(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveUp(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedLeftUp(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveDown(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedDown(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveDown(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedRightDown(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveDown(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedLeftDown(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveLeft(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedLeft(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveLeft(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedUpLeft(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveLeft(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedDownLeft(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveRight(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):- connectedRight(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveRight(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedUpRight(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedA(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
-moveRight(Z,Z1,(X,Y,_,D),(XO,YO,_,DO)):-connectedDownRight(Z,Z1,X,Y,X1,Y1,D,D1)->isLockedB(Z,Z1,(X1,Y1,_,D1),(XO,YO,_,DO)).
+isLocked(Z,(X,Y,_,D)):- isLocked1(Z,(X,Y,_,D),(X,Y,_,D)),isLocked2(Z,(X,Y,_,D),(X,Y,_,D)).
+isLocked1(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D));(D=0,moveUp(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLocked1(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D));(D=1,moveRight(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLocked2(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D));(D=1,moveLeft(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLocked2(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D));(D=0,moveDown(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLockedA(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D);(XO=X,YO=Y,DO=D));(D=0,moveUp(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLockedA(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderUp(X,Y,D);(XO=X,YO=Y,DO=D));(D=1,moveRight(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLockedB(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D);(XO=X,YO=Y,DO=D));(D=1,moveLeft(Z,(X,Y,_,D),(XO,YO,_,DO))).
+isLockedB(Z,(X,Y,_,D),(XO,YO,_,DO)):- (isBorderDown(X,Y,D);(XO=X,YO=Y,DO=D));(D=0,moveDown(Z,(X,Y,_,D),(XO,YO,_,DO))).
+moveUp(Z,(X,Y,_,D),(XO,YO,_,DO)):- connectedUp(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveUp(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedRightUp(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveUp(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedLeftUp(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveDown(Z,(X,Y,_,D),(XO,YO,_,DO)):- connectedDown(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveDown(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedRightDown(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveDown(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedLeftDown(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveLeft(Z,(X,Y,_,D),(XO,YO,_,DO)):- connectedLeft(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveLeft(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedUpLeft(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveLeft(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedDownLeft(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveRight(Z,(X,Y,_,D),(XO,YO,_,DO)):- connectedRight(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveRight(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedUpRight(Z,X,Y,X1,Y1,D,D1)->isLockedA(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
+moveRight(Z,(X,Y,_,D),(XO,YO,_,DO)):-connectedDownRight(Z,X,Y,X1,Y1,D,D1)->isLockedB(Z,(X1,Y1,_,D1),(XO,YO,_,DO)).
 
 
-connectedUp(Z,_,X1,Y1,B,A,D,D1):-(member((X1,A,_,D),Z),A is Y1+1), B is X1,D1 is 0.
-connectedDown(Z,_,X1,Y1,B,A,D,D1):-(member((X1,A,_,D),Z),A is Y1-1), B is X1,D1 is 0.
-connectedLeftUp(_,Z1,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z1), B is X1, A is Y1,D1 is 1.
-connectedRightUp(_,Z1,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z1),A is Y1, B is X1+1,D1 is 1.
-connectedLeftDown(_,Z1,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z1), B is X1-1, A is Y1,D1 is 1.
-connectedRightDown(_,Z1,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z1),A is Y1, B is X1,D1 is 1.
-connectedUpLeft(Z,_,X1,Y1,B,A,D,D1):-D=1,member((B,Y1,_,0),Z), B is X1-1, A is Y1,D1 is 0.
-connectedUpRight(Z,_,X1,Y1,B,A,D,D1):-D=1,(member((B,Y1,_,0),Z),B is X1), A is Y1,D1 is 0.
-connectedDownLeft(Z,_,X1,Y1,B,A,D,D1):-D=1,member((X1,A,_,0),Z), B is X1, A is Y1-1,D1 is 0.
-connectedDownRight(Z,_,X1,Y1,B,A,D,D1):-D=1,member((X1,Y1,_,0),Z),B is X1, A is X1,D1 is 0.
-connectedRight(_,Z1,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z1),B is X1+1), A is Y1,D1 is 1.
-connectedLeft(_,Z1,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z1),B is X1-1), A is Y1,D1 is 1.
+connectedUp(Z,X1,Y1,B,A,D,D1):-(member((X1,A,_,D),Z),A is Y1+1), B is X1,D1 is 0.
+connectedDown(Z,X1,Y1,B,A,D,D1):-(member((X1,A,_,D),Z),A is Y1-1), B is X1,D1 is 0.
+connectedLeftUp(Z,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z), B is X1, A is Y1,D1 is 1.
+connectedRightUp(Z,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z),A is Y1, B is X1+1,D1 is 1.
+connectedLeftDown(Z,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z), B is X1-1, A is Y1,D1 is 1.
+connectedRightDown(Z,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z),A is Y1, B is X1,D1 is 1.
+connectedUpLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((B,Y1,_,0),Z), B is X1-1, A is Y1,D1 is 0.
+connectedUpRight(Z,X1,Y1,B,A,D,D1):-D=1,(member((B,Y1,_,0),Z),B is X1), A is Y1,D1 is 0.
+connectedDownLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((X1,A,_,0),Z), B is X1, A is Y1-1,D1 is 0.
+connectedDownRight(Z,X1,Y1,B,A,D,D1):-D=1,member((X1,Y1,_,0),Z),B is X1, A is X1,D1 is 0.
+connectedRight(Z,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z),B is X1+1), A is Y1,D1 is 1.
+connectedLeft(Z,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z),B is X1-1), A is Y1,D1 is 1.
 
+%-----------------------------------------------------------------------------------------
 
-
-
+deuxieme([_,_,T],T).
+renvoie(R,R).
+genListe(T,[T,T,T]).
 
 
 
