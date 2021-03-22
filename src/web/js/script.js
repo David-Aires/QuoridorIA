@@ -3,29 +3,59 @@
 /*
 Création de l'objet joueur et initialisation des différents joueurs avec leur position de base et leur classe de couleur
 */
-function Player(listWall,wall,color,color_class,x,y) {
+function Player(listWall,color,color_class,x,y) {
   this.listWall= listWall;
-  this.wall = wall;
   this.color = color;
   this.color_class = color_class;
   this.x = x;
   this.y = y;
-  this.pos = function () {
-    return this.x+"-"+this.y;
-  }
+}
+// ->  [[1,2,B,0],[1,3,B,0]]
+// -> [(1,2,B,0),(1,3,B,0)]
+function Wall(x, y, color, orientation){
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.orientation = orientation;
 }
 
-var red_player = new Player([],5,'red','active_red',4,0);
-var blue_player = new Player([],5,'blue','active_blue',0,8);
-var green_player = new Player([],5,'darkgreen','active_green',4,16);
-var yellow_player = new Player([],5,'gold','active_yellow',8,8);
+function allWall() {
+    let text_for_back = "[";
+    list_players.forEach(
+        elem => elem.listWall.forEach(
+            elem2 => text_for_back += "(" + elem2.x + "," + elem2.y + "," + elem2.color + "," + elem2.orientation + "),"));
+    if (text_for_back.length != 1){
+    text_for_back = text_for_back.slice(0,-1);
+    }
+    text_for_back += "]";
+    return text_for_back;
+}
+
+// très très gros Fix. demandez explication à David ou Sean si besoin d'explication
+function allPlayer() {
+    let text_for_back = "[";
+    list_players.forEach(
+        elem => text_for_back += "(" + Math.floor(elem.y/2) + "," + elem.x +"," + elem.color + "),");
+    text_for_back = text_for_back.slice(0,-1);
+    text_for_back += "]";
+    return text_for_back;
+}
+
+function affichage(Wall1, Wall2) {
+    console.log(allWall() + "\n" +
+        allPlayer() + "\n" +
+        "[(" +  Wall1.x + "," + Wall1.y + "," + Wall1.color + "," + Wall1.orientation  + "),(" + Wall2.x + "," + Wall2.y + "," + Wall2.color + "," + Wall2.orientation + ")]");
+}
+
+
+var red_player = new Player([],'red','active_red',4,0);
+var blue_player = new Player([],'blue','active_blue',0,8);
+var green_player = new Player([],'darkgreen','active_green',4,16);
+var yellow_player = new Player([],'gold','active_yellow',8,8);
 var list_players = [blue_player,red_player,green_player,yellow_player];
 var tour = 0;
 
 
-
-var blockers = 0;
-var maxBlockers = 9;
 const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
 //##################################################################################################################################################################################################
@@ -98,31 +128,38 @@ $(document).on('click', '.cell', function(e){
   }  
 });
 
+// vertical 0, horizontal 1
 $(document).on('click', '.border-v, .border-h', function(e){
   var info_classe = ($(this).attr('class'));
   var info = $(this).data(info_classe).split('-');
-  let barrier_ = [[parseInt(info[0]),parseInt(info[1])]];
+  let barrier_ = [parseInt(info[0]),parseInt(info[1])];
   if (info_classe == 'border-h') {
     if (info[1] == '8') {
-      $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
-      barrier_.push([barrier_[0][0],barrier_[0][1]--])
+        Wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
+        Wall2 = new Wall(--barrier_[1], barrier_[0],list_players[tour].color, 1 );
+        $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
     } else {
+        Wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
+        Wall2 = new Wall(++barrier_[1], barrier_[0],list_players[tour].color, 1 );
       $($(this).addClass('blocked').next('.border-h').addClass('blocked'));
-        barrier_.push([barrier_[0][0],barrier_[0][1]++])
     }
   }
   else {
     $($(this).addClass('blocked'));
     if (info[0] == '8') {
+        Wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
+        Wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0 );
       $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').addClass('blocked');
-        barrier_.push([barrier_[0][0]--,barrier_[0][1]])
     } else {
+        Wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
+        Wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );
       $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
-        barrier_.push([barrier_[0][0]++,barrier_[0][1]])
     }
   }
   $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
-  list_players[tour].listWall.push(barrier_);
+  affichage(Wall1, Wall2);
+  list_players[tour].listWall.push(Wall1);
+  list_players[tour].listWall.push(Wall2);
   switch_tour();
 });
 
