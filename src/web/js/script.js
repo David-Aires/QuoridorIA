@@ -3,7 +3,8 @@
 /*
 Création de l'objet joueur et initialisation des différents joueurs avec leur position de base et leur classe de couleur
 */
-function Player(wall,color,color_class,x,y) {
+function Player(listWall,wall,color,color_class,x,y) {
+  this.listWall= listWall;
   this.wall = wall;
   this.color = color;
   this.color_class = color_class;
@@ -14,10 +15,10 @@ function Player(wall,color,color_class,x,y) {
   }
 }
 
-var red_player = new Player(5,'red','active_red',4,0);
-var blue_player = new Player(5,'blue','active_blue',0,8);
-var green_player = new Player(5,'darkgreen','active_green',4,16);
-var yellow_player = new Player(5,'gold','active_yellow',8,8);
+var red_player = new Player([],5,'red','active_red',4,0);
+var blue_player = new Player([],5,'blue','active_blue',0,8);
+var green_player = new Player([],5,'darkgreen','active_green',4,16);
+var yellow_player = new Player([],5,'gold','active_yellow',8,8);
 var list_players = [blue_player,red_player,green_player,yellow_player];
 var tour = 0;
 
@@ -100,22 +101,28 @@ $(document).on('click', '.cell', function(e){
 $(document).on('click', '.border-v, .border-h', function(e){
   var info_classe = ($(this).attr('class'));
   var info = $(this).data(info_classe).split('-');
+  let barrier_ = [[parseInt(info[0]),parseInt(info[1])]];
   if (info_classe == 'border-h') {
     if (info[1] == '8') {
       $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
+      barrier_.push([barrier_[0][0],barrier_[0][1]--])
     } else {
       $($(this).addClass('blocked').next('.border-h').addClass('blocked'));
+        barrier_.push([barrier_[0][0],barrier_[0][1]++])
     }
   }
   else {
     $($(this).addClass('blocked'));
     if (info[0] == '8') {
       $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').addClass('blocked');
+        barrier_.push([barrier_[0][0]--,barrier_[0][1]])
     } else {
       $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
+        barrier_.push([barrier_[0][0]++,barrier_[0][1]])
     }
   }
   $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
+  list_players[tour].listWall.push(barrier_);
   switch_tour();
 });
 
