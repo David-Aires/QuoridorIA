@@ -41,10 +41,16 @@ function allPlayer() {
     return text_for_back;
 }
 
-function affichage(Wall1, Wall2) {
+function affichagePlacerBarriere(Wall1, Wall2) {
     console.log(allWall() + "\n" +
         allPlayer() + "\n" +
         "[(" +  Wall1.x + "," + Wall1.y + "," + Wall1.color + "," + Wall1.orientation  + "),(" + Wall2.x + "," + Wall2.y + "," + Wall2.color + "," + Wall2.orientation + ")]");
+}
+
+function affichagePlacerJoueur(player){
+    console.log(allWall() + "\n" +
+        allPlayer() + "\n" +
+        "[(" +  Math.floor(player.y/2) + "," + player.x + "," + player.color + ")]");
 }
 
 
