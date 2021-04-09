@@ -1,5 +1,5 @@
 
-y(A):- member(A,[1,2,3,4,5,6,7,8,9]).
+y(A):- member(A,[0,1,2,3,4,5,6,7,8]).
 x(A):- y(A).
 coor(X,Y):- x(X),y(Y).
 
@@ -120,3 +120,69 @@ genListe(T,[T,T,T]).
 %isLocked([(1,1,R,0),(1,2,R,0),(1,3,R,0),(1,5,R,0),(1,6,R,0),(1,7,R,0),(1,8,R,0),(1,9,R,0)],[],(1,4,R,0)).
 %isBlocked((1,1),[(1,1,"ro",0)],[(2,2,"ro",1)],(1,1)). 
 
+%20 ?- string_to_list("7",U).
+%U = [55].
+%atom_string('4',U).
+
+%step1 créer un sous ensemble 
+%depuis "[(0,0,blue,0),(0,1,blue,0)]"" sortir -> [(0,0,'bl'),(0,1,'bl')]
+%ignorer les [] et detecter les ()
+
+
+%suprimme les occurences
+supprime(X,[X|L],L).
+supprime(X,[Y|L],[Y|R]):- supprime(X,L,R).
+
+%supprime les [ 91 et ] 93 
+converteur(Str,Finale):-string_to_list(Str,LS),supprime(91,LS,LS2),supprime(93,LS2,LS3),separateur(LS3,Finale).
+
+%sépare les liste en fonction des () pour créer d'autres sous listes 
+%40 = ( 41 = )
+%append([[40]],[[8]],U).  
+%U = [[40], [8]].
+%separateur([],_).
+%separateur([L|Ls],Ensemble):-L = 40 ,append([],[L],Tp),separateur(Ls,Ensemble)
+
+
+
+%barr
+%joueur
+
+
+
+point(X,Y):- member(X,[0,1,2,3,4,5,6,7,8]),member(Y,[0,1,2,3,4,5,6,7,8]).
+
+%verifie si tu traverses un mur
+gaspar(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,0),LSb).
+gaspar(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,0),LSb).
+gaspar(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,1),LSb).
+gaspar(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,1),LSb).
+
+arc((X,Y),(X1,Y),LSb):-point(X,Y),X1 is X - 1 , point(X1,Y),not(gaspar(X,Y,X1,Y,LSb)).
+arc((X,Y),(X1,Y),LSb):-point(X,Y),X1 is X + 1 , point(X1,Y),not(gaspar(X,Y,X1,Y,LSb)).
+arc((X,Y),(X,Y1),LSb):-point(X,Y),Y1 is Y - 1 , point(X,Y1),not(gaspar(X,Y,X,Y1,LSb)).
+arc((X,Y),(X,Y1),LSb):-point(X,Y),Y1 is Y + 1 , point(X,Y1),not(gaspar(X,Y,X,Y1,LSb)).
+
+arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)).
+arc2(((X,Y),(X1,Y1)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),not(member((X1,Y1,_),LSj)).
+
+coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y>Y1 , Y2 is Y1 -1 , X2 is X1.
+coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y<Y1 , Y2 is Y1 +1 , X2 is X1.
+coorplus((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X>X1 , X2 is X1 -1 , Y2 is Y1.
+coorplus((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X>X1 , X2 is X1 +1 , Y2 is Y1.
+
+arc3(((X,Y),(X2,Y2)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),not(gaspar(X,Y,X2,Y2,LSb)).
+arc3(((X,Y),(X3,Y3)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),gaspar(X,Y,X2,Y2,LSb),diag((X,Y),(X2,Y2),(X3,Y3)).
+
+trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B - 1.
+trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B + 1.
+
+triangleNeg(A,B,A1,B1):- A1 is A - 1, B1 is B - 1.
+triangleNeg(A,B,A1,B1):- A1 is A - 1, B1 is B + 1.
+
+
+diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 > Y , triangleNeg(Y1,X1,Y2,X2).
+diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 < Y , trianglePos(Y1,X1,Y2,X2).
+
+diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
+diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
