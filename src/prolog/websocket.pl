@@ -94,3 +94,9 @@ echo(WebSocket) :-
 get_response(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
+
+
+
+set_coup(Config, Reponse ):-
+  aprouved(Config.message,Reponse),
+  Reponse = _{message:Reponse}.
