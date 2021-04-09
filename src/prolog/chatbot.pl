@@ -294,7 +294,10 @@ read_atomics(ListOfAtomics,Input) :-
 	clean_string(String,Cleanstring),
 	extract_atomics(Cleanstring,ListOfAtomics).
 
-
+read_atomics2(ListOfAtomics,Input) :-
+    split_string(Input,"/" , "" , L),
+	string_to_list(L,String),
+	extract_atomics(String,ListOfAtomics).
 
 /* --------------------------------------------------------------------- */
 /*                                                                       */

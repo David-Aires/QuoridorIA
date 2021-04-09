@@ -20,25 +20,22 @@ function Wall(x, y, color, orientation){
 }
 
 function allWall() {
-    let text_for_back = "[";
+    let list_wall = [];
     list_players.forEach(
         elem => elem.listWall.forEach(
-            elem2 => text_for_back += "(" + elem2.x + "," + elem2.y + "," + elem2.color + "," + elem2.orientation + "),"));
-    if (text_for_back.length != 1){
-    text_for_back = text_for_back.slice(0,-1);
-    }
-    text_for_back += "]";
-    return text_for_back;
+            elem2 => {
+                list_wall.push([elem2.x, elem2.y, elem2.color, elem2.orientation]);
+            }));
+
+    return list_wall;
 }
 
 // très très gros Fix. demandez explication à David ou Sean si besoin d'explication
 function allPlayer() {
-    let text_for_back = "[";
+    let list_player = [];
     list_players.forEach(
-        elem => text_for_back += "(" + Math.floor(elem.y/2) + "," + elem.x +"," + elem.color + "),");
-    text_for_back = text_for_back.slice(0,-1);
-    text_for_back += "]";
-    return text_for_back;
+        elem => list_player.push([Math.floor(elem.y/2),elem.x,elem.color]));
+    return list_player;
 }
 
 function affichagePlacerBarriere(Wall1, Wall2) {
@@ -163,7 +160,7 @@ $(document).on('click', '.border-v, .border-h', function(e){
     }
   }
   $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
-  affichage(Wall1, Wall2);
+  affichagePlacerBarriere(Wall1, Wall2);
   list_players[tour].listWall.push(Wall1);
   list_players[tour].listWall.push(Wall2);
   switch_tour();

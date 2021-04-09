@@ -100,3 +100,10 @@ get_response(Message, Response) :-
 set_coup(Config, Reponse ):-
   aprouved(Config.message,Reponse),
   Reponse = _{message:Reponse}.
+
+
+list_tuple([],[]).
+list_tuple([[A,B]|T], [(A, B)|Y]) :- list_tuple(T, Y).
+list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_tuple(T, Y).
+
+
