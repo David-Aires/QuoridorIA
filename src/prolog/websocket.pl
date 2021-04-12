@@ -97,9 +97,7 @@ get_response(Message, Response) :-
 
 
 
-set_coup(Config, Reponse ):-
-  aprouved(Config.message,Reponse),
-  Reponse = _{message:Reponse}.
+
 
 
 list_tuple([],[]).
