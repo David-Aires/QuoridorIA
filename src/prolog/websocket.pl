@@ -20,6 +20,7 @@
 :- use_module(library(http/http_server_files)).
 :- use_module(library(lists)).
 :- include('chatbot.pl').
+:- include('tablepion.pl').
 
 http:location(js,	root(js), []).
 http:location(css,	root(css), []).
@@ -98,10 +99,11 @@ get_response(Message, Response) :-
 
 
 
+list_tuple([A|[]], (A)).
+list_tuple([A|T], (A,B)) :- list_tuple(T, B).
 
-
-list_tuple([],[]).
-list_tuple([[A,B]|T], [(A, B)|Y]) :- list_tuple(T, Y).
-list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_tuple(T, Y).
+list_list_tuple([],[]).
+list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
+list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
 
 
