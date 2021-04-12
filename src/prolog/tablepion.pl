@@ -9,7 +9,7 @@ coorB(X,Y,D):-D = 1 , X < 10, X > 0, Y < 9 ,  Y > 0.
 verticalBarriere(X,Y):- barriere(X),y(Y).
 horizontaleBarriere(X,Y):- x(X),barriere(Y).
 
-couleur(M):- member(M,["ro","ja","ve","bl"]).
+couleur(M):- member(M,[red,gold,darkgreen,blue]).
 
 %--------------------------------------------------------------------------------------------
 
@@ -187,8 +187,9 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(isLocked(LSb,(X1,Y1,Cl,Or))).
 aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl).
 
-%fonction d'évaluation
+%--------------fonction d'évaluation---------------------
 
+%objectif : calculer la différence de  score entre les joueur
 % verifier la distance entre le joueur et l'arrivé 
 % 0 = début 
 % 8 = arrivé
@@ -197,12 +198,19 @@ aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X
 % ve = 8,5 -> vise le _,0 : droite -> gauche
 % bl = 5,8 -> vise le 0,_ : bas -> haut
 
-distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "ro", Sc is Y. 
-distance(Cl,X,_,Sc):-couleur(Cl), Cl = "ja", Sc is X. 
-distance(Cl,X,_,Sc):-couleur(Cl), Cl = "ve", Sc is 8 - X.
-distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "bl", Sc is 8 - Y. 
+distance(Cl,_,Y,Sc):-couleur(Cl), Cl = red, Sc is Y. 
+distance(Cl,X,_,Sc):-couleur(Cl), Cl = gold, Sc is X. 
+distance(Cl,X,_,Sc):-couleur(Cl), Cl = darkgreen, Sc is 8 - X.
+distance(Cl,_,Y,Sc):-couleur(Cl), Cl = blue, Sc is 8 - Y. 
 
+%calcule la différence de score entre 2 Joeur
 difference((X,Y,Cl),(X1,Y1,Cl1),Diff):- distance(Cl,X,Y,D),distance(Cl1,X1,Y1,D1), Diff is D - D1.
+%renvoie toutes les differences par rapport aux autres joueurs : allDifference([(4,5,"ro"),(4,2,"bl"),(4,5,"ja"),(6,6,"ve")],"ro",Sc,Cl). 
+allDifference(Lsj,ClIa,Sc,Clcible):-member((X,Y,ClIa),Lsj),member((X1,Y1,Clcible),Lsj),not(ClIa = Clcible),difference((X,Y,ClIa),(X1,Y1,Clcible),Sc).
 
+%objectif : calculer le nombre de pas a faire pour faire un score de +1 
 
-%table(Ls,ClIa,Sc):-member((X,Y,ClIa),Ls)     difference((X,Y,Cl),
+moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)):-distance(Cl,X,Y,Sc),arc3(((X,Y),(X2,Y2)),LSj,LSb),distance(Cl,X2,Y2,Sc2),Sc < Sc2.
+
+%road(LSj,LSb,(X,Y,Cl),(X2,Y2),Iterate):-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)).
+%road(LSj,LSb,(X,Y,Cl),(X2,Y2),Iterate):-not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),arc3(((X,Y),(X3,Y3)),LSj,LSb),road(LSj,LSb,(X3,Y3,Cl),(X2,Y2),Iterate).
