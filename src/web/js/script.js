@@ -38,16 +38,28 @@ function allPlayer() {
     return list_player;
 }
 
-function affichagePlacerBarriere(Wall1, Wall2) {
-    console.log(allWall() + "\n" +
-        allPlayer() + "\n" +
-        "[(" +  Wall1.x + "," + Wall1.y + "," + Wall1.color + "," + Wall1.orientation  + "),(" + Wall2.x + "," + Wall2.y + "," + Wall2.color + "," + Wall2.orientation + ")]");
+function barrPositionChange(wall1, wall2) {
+    let pos_barr = [wall2.x, wall2.y, wall2.orientation];
+    let pos_player = [Math.floor(list_players[tour].y/2),parseInt(list_players[tour].x),list_players[tour].color];
+    let listWall2 = allWall();
+    listWall2.push([wall1.x, wall1.y, wall1.color, wall1.orientation]);
+    const payloadBarr = {
+        listWalls: listWall2,
+        listPlayers: allPlayer(),
+        posPlayer: pos_player,
+        posBarr: pos_barr
+    };
+    sendMessage(JSON.stringify(payloadBarr));
 }
 
-function affichagePlacerJoueur(player){
-    console.log(allWall() + "\n" +
-        allPlayer() + "\n" +
-        "[(" +  Math.floor(player.y/2) + "," + player.x + "," + player.color + ")]");
+function playerPositonChange(x, y, color){
+    let pos_player = [Math.floor(y/2),parseInt(x),color];
+    const payloadPlayer = {
+        listWalls: allWall(),
+        listPlayers: allPlayer(),
+        posPlayer: pos_player
+    };
+    sendMessage(JSON.stringify(payloadPlayer))
 }
 
 
@@ -103,21 +115,11 @@ $(document).on('click', '.cell', function(e){
   
   clicked.push(row, cell);
   console.log(clicked);
-  
+
   if( $this.hasClass(list_players[tour].color_class) ) return;
-  
-  if( Math.abs( Math.abs(clicked[0] - list_players[tour].x)) > 1 ||
-      Math.abs( Math.abs(clicked[1] - list_players[tour].y)) > 2  ){
-    e.preventDefault();
-  } else if( (clicked[0] < list_players[tour].x) && $('span.border-h[data-border-h=' +(list_players[tour].x-1)+ '-' +(list_players[tour].y/2)+ ']').hasClass('blocked')
-           || (clicked[0] > list_players[tour].x) && $('span.border-h[data-border-h=' +(list_players[tour].x)+ '-' +(list_players[tour].y/2)+ ']').hasClass('blocked')
-           || (clicked[1] < list_players[tour].y) && $('span.border-v[data-border-v=' +(list_players[tour].x)+ '-' +(list_players[tour].y-1)+ ']').hasClass('blocked')
-          || (clicked[1] > list_players[tour].y) && $('span.border-v[data-border-v=' +(list_players[tour].x)+ '-' +(list_players[tour].y+1)+ ']').hasClass('blocked')){
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> blocked!->" + (list_players[tour].x)+ '-' +(list_players[tour].y/2)+"</div>");
-    return false;    
-  }else{ 
-      $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
-      if (arr[row][cell][1] === false) { 
+  playerPositonChange(clicked[0], clicked[1], list_players[tour].color);
+  $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
+    if (arr[row][cell][1] === false) {
         $this.addClass(list_players[tour].color_class);
         
         //make current attribute of active true, previous cell - false
@@ -128,7 +130,6 @@ $(document).on('click', '.cell', function(e){
       };
       $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ info);
       switch_tour();
-  }  
 });
 
 // vertical 0, horizontal 1
@@ -160,7 +161,7 @@ $(document).on('click', '.border-v, .border-h', function(e){
     }
   }
   $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
-  affichagePlacerBarriere(Wall1, Wall2);
+  barrPositionChange(Wall1, Wall2);
   list_players[tour].listWall.push(Wall1);
   list_players[tour].listWall.push(Wall2);
   switch_tour();
