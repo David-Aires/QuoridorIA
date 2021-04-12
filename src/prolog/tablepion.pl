@@ -26,7 +26,7 @@ testRepet([(X,Y,P)|S]):- not(member((X,Y,_),S)), not(member((_,_,P),S)),testRepe
 %--------------------------------------------------------------------------------------------
 
 
-nbColor(C,HR,VR):- couleur(C),count(C,HR,Nb1),count(C,VR,Nb2), (Nb1 + Nb2) < 6.
+nbColor(C,LSb):- couleur(C),count(C,LSb,Nb), Nb< 6.
 
 count(_, [], 0).
 count(Num, [(_,_,H,_)|T], X) :- dif(Num,H), count(Num, T, X).
@@ -40,9 +40,6 @@ testAllBarr([(X,Y,C,D)|S]):-coorB(X,Y,D),couleur(C),testAllBarr(S).
 isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=0,member((X1,Y1,_,1),Z),member((B,Y1,_,1),Z).
 isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=1,member((B,Y1,_,0),Z),member((X1,A,_,0),Z).
 
-
-isBlocked((X1,Y1),_,Ls2,(X2,_)):- not(X2 = X1),member((X1,Y1,_,_),Ls2).
-isBlocked((X1,Y1),Ls1,_,(_,Y2)):- not(Y2 = Y1),member((X1,Y1,_,_),Ls1).
 %/////////////////////////////////////////////////////////////////////////////
 %vérifie si une barrière ce trouve en bord de map -> correspond à une des conditions d'arret
 isBorderUp(X,Y,D):-D=0,Y=9;D=1,X=9.
@@ -150,18 +147,18 @@ converteur(Str,Finale):-string_to_list(Str,LS),supprime(91,LS,LS2),supprime(93,L
 
 
 
-point(X,Y):- member(X,[0,1,2,3,4,5,6,7,8]),member(Y,[0,1,2,3,4,5,6,7,8]).
+coordonnee(X,Y):- member(X,[0,1,2,3,4,5,6,7,8]),member(Y,[0,1,2,3,4,5,6,7,8]).
 
 %verifie si tu traverses un mur
-gaspar(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,0),LSb).
-gaspar(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,0),LSb).
-gaspar(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,1),LSb).
-gaspar(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,1),LSb).
 
-arc((X,Y),(X1,Y),LSb):-point(X,Y),X1 is X - 1 , point(X1,Y),not(gaspar(X,Y,X1,Y,LSb)).
-arc((X,Y),(X1,Y),LSb):-point(X,Y),X1 is X + 1 , point(X1,Y),not(gaspar(X,Y,X1,Y,LSb)).
-arc((X,Y),(X,Y1),LSb):-point(X,Y),Y1 is Y - 1 , point(X,Y1),not(gaspar(X,Y,X,Y1,LSb)).
-arc((X,Y),(X,Y1),LSb):-point(X,Y),Y1 is Y + 1 , point(X,Y1),not(gaspar(X,Y,X,Y1,LSb)).
+arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X - 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
+arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X + 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
+arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y - 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
+arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y + 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
 
 arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)).
 arc2(((X,Y),(X1,Y1)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),not(member((X1,Y1,_),LSj)).
@@ -171,8 +168,8 @@ coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y<Y1 , Y2 is Y1 +1 , X2 is X1.
 coorplus((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X>X1 , X2 is X1 -1 , Y2 is Y1.
 coorplus((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X<X1 , X2 is X1 +1 , Y2 is Y1.
 
-arc3(((X,Y),(X2,Y2)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),not(gaspar(X,Y,X2,Y2,LSb)).
-arc3(((X,Y),(X3,Y3)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),gaspar(X,Y,X2,Y2,LSb),diag((X,Y),(X2,Y2),(X3,Y3)).
+arc3(((X,Y),(X2,Y2)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),not(casper(X,Y,X2,Y2,LSb)).
+arc3(((X,Y),(X3,Y3)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),casper(X,Y,X2,Y2,LSb),diag((X,Y),(X2,Y2),(X3,Y3)).
 
 trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B - 1.
 trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B + 1.
@@ -187,5 +184,25 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 < Y , trianglePos(Y1,X1,Y2,X2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 %
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-writeln('barr').
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(isLocked(LSb,(X1,Y1,Cl,Or))).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl).
+
+%fonction d'évaluation
+
+% verifier la distance entre le joueur et l'arrivé 
+% 0 = début 
+% 8 = arrivé
+% ro = 5,0 -> vise le _,8 : haut -> bas
+% ja = 0,5 -> vise le 8,_ : gauche -> droite
+% ve = 8,5 -> vise le _,0 : droite -> gauche
+% bl = 5,8 -> vise le 0,_ : bas -> haut
+
+distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "ro", Sc is Y. 
+distance(Cl,X,_,Sc):-couleur(Cl), Cl = "ja", Sc is X. 
+distance(Cl,X,_,Sc):-couleur(Cl), Cl = "ve", Sc is 8 - X.
+distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "bl", Sc is 8 - Y. 
+
+difference((X,Y,Cl),(X1,Y1,Cl1),Diff):- distance(Cl,X,Y,D),distance(Cl1,X1,Y1,D1), Diff is D - D1.
+
+
+%table(Ls,ClIa,Sc):-member((X,Y,ClIa),Ls)     difference((X,Y,Cl),

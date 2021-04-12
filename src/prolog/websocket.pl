@@ -97,6 +97,7 @@ get_response(Message, Response) :-
   Response = _{message:Solution}.
 
 
+<<<<<<< Updated upstream
 
 
 list_tuple([A|[]], (A)).
@@ -107,3 +108,9 @@ list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
 
 
+=======
+%(LSj,LSb,(X,Y,Cl),(X1,Y1))
+set_coup(Config, Reponse ):-
+  aprouved(Config.message,Reponse),
+  Reponse = _{message:Reponse}.
+>>>>>>> Stashed changes
