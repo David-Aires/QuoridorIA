@@ -92,13 +92,22 @@ echo(WebSocket) :-
 % Pull the message content out of the JSON converted to a prolog dict
 % then add the current time, then pass it back up to be sent to the
 % client
+
+
+get_response(Message, Response) :-
+  list_list_tuple(Message.listPlayers, LSj),
+  list_list_tuple(Message.listWalls, LSb),
+  list_tuple(Message.posPlayerNow, PlayerNow),
+  list_tuple(Message.posPlayer, PlayerMov),
+  trace, aprouved(LSj,LSb,PlayerNow,PlayerMov),
+  Response = _{message:"true"}.
+
 get_response(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
 
-
-<<<<<<< Updated upstream
-
+get_response(Message, Response) :-
+  Response = _{message:"rien a signaler"}.
 
 list_tuple([A|[]], (A)).
 list_tuple([A|T], (A,B)) :- list_tuple(T, B).
@@ -106,11 +115,3 @@ list_tuple([A|T], (A,B)) :- list_tuple(T, B).
 list_list_tuple([],[]).
 list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
-
-
-=======
-%(LSj,LSb,(X,Y,Cl),(X1,Y1))
-set_coup(Config, Reponse ):-
-  aprouved(Config.message,Reponse),
-  Reponse = _{message:Reponse}.
->>>>>>> Stashed changes

@@ -52,11 +52,13 @@ function barrPositionChange(wall1, wall2) {
     sendMessage(JSON.stringify(payloadBarr));
 }
 
-function playerPositonChange(x, y, color){
-    let pos_player = [Math.floor(y/2),parseInt(x),color];
+function playerPositonChange(x, y){
+    let pos_player_now = [Math.floor(list_players[tour].y/2),list_players[tour].x, list_players[tour].color];
+    let pos_player = [Math.floor(y/2),parseInt(x)];
     const payloadPlayer = {
         listWalls: allWall(),
         listPlayers: allPlayer(),
+        posPlayerNow : pos_player_now,
         posPlayer: pos_player
     };
     sendMessage(JSON.stringify(payloadPlayer))
@@ -117,7 +119,7 @@ $(document).on('click', '.cell', function(e){
   console.log(clicked);
 
   if( $this.hasClass(list_players[tour].color_class) ) return;
-  playerPositonChange(clicked[0], clicked[1], list_players[tour].color);
+  playerPositonChange(clicked[0], clicked[1]);
   $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
     if (arr[row][cell][1] === false) {
         $this.addClass(list_players[tour].color_class);
