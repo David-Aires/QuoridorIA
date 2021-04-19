@@ -4,8 +4,8 @@ y(A):- point(A).
 x(A):- point(A).
 coor(X,Y):- x(X),y(Y).
 
-coorB(X,Y,D):-D = 0 , X < 9 , X > 0, Y < 10 , Y > 0.
-coorB(X,Y,D):-D = 1 , X < 10, X > 0, Y < 9 ,  Y > 0.
+coorB(X,Y,D):-D = 0 , X < 9 , X >= 0, Y < 10 , Y >= 0.
+coorB(X,Y,D):-D = 1 , X < 10, X >= 0, Y < 9 ,  Y >= 0.
 
 verticalBarriere(X,Y):- barriere(X),y(Y).
 horizontaleBarriere(X,Y):- x(X),barriere(Y).
