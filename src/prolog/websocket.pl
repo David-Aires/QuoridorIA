@@ -84,12 +84,19 @@ echo(WebSocket) :-
     -> true
     ; (
       Message.data.type == "play"
-      -> (get_response_player(Message.data, Response),
+      -> (
+         write("Vous etes la-bas"),
+         get_response_player(Message.data, Response),
          ws_send(WebSocket, json(Response)),
-         echo(WebSocket));
-         (get_response_chatbot(Message.data, Response),
-         ws_send(WebSocket, json(Response)),
-         echo(WebSocket))
+         echo(WebSocket)
+         )
+      ;
+        (
+        write("Vous etes ici"),
+        get_response_chatbot(Message.data, Response),
+        ws_send(WebSocket, json(Response)),
+        echo(WebSocket)
+        )
       )
     ).
 
