@@ -27,8 +27,7 @@ testRepet([(X,Y,P)|S]):- not(member((X,Y,_),S)), not(member((_,_,P),S)),testRepe
 %--------------------------------------------------------------------------------------------
 
 
-nbColor(C,LSb):- couleur(C),count(C,LSb,Nb), Nb < 6,write("nb couleur ="),write(Nb),write(C)
-.
+nbColor(C,LSb):- couleur(C),count(C,LSb,Nb), Nb < 6,write("nb couleur ="),write(Nb),write(C).
 
 count(_, [], 0).
 count(Num, [(_,_,H,_)|T], X) :- dif(Num,H), count(Num, T, X).
