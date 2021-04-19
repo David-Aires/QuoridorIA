@@ -82,8 +82,7 @@ echo(WebSocket) :-
     ws_receive(WebSocket, Message, [format(json)]),
     ( Message.opcode == close
     -> true
-    ; get_response(Message.data, Response),
-      write("Response: "), writeln(Response),
+    ; choice(Message.data.type,Message,Response),
       ws_send(WebSocket, json(Response)),
       echo(WebSocket)
     ).
@@ -92,12 +91,31 @@ echo(WebSocket) :-
 % Pull the message content out of the JSON converted to a prolog dict
 % then add the current time, then pass it back up to be sent to the
 % client
-get_response(Message, Response) :-
+
+choice("msg",Message,Response):- get_response_chatbot(Message.data,Response).
+choice("play",Message,Response):- get_response_player(Message.data, Response).
+choice("barr",Message,Response):- get_response_barr(Message.data, Response).
+
+
+get_response_player(Message, Response) :-
+  list_list_tuple(Message.listPlayers, LSj),
+  list_list_tuple(Message.listWalls, LSb),
+  list_tuple(Message.posPlayerNow, PlayerNow),
+  list_tuple(Message.posPlayer, PlayerMov),
+  aprouved(LSj,LSb,PlayerNow,PlayerMov)
+  -> Response = _{message:"true"}; Response = _{message:"false"}.
+
+get_response_barr(Message, Response) :-
+   list_list_tuple(Message.listPlayers, LSj),
+   list_list_tuple(Message.listWalls, LSb),
+   list_tuple(Message.posPlayer, Player),
+   list_tuple(Message.posBarr, Barr),
+   aprouved(LSj,LSb,Player,Barr)
+   -> Response = _{message:"true"}; Response = _{message:"false"}.
+
+get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
-
-
-<<<<<<< Updated upstream
 
 
 list_tuple([A|[]], (A)).
@@ -106,11 +124,4 @@ list_tuple([A|T], (A,B)) :- list_tuple(T, B).
 list_list_tuple([],[]).
 list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
-
-
-=======
-%(LSj,LSb,(X,Y,Cl),(X1,Y1))
-set_coup(Config, Reponse ):-
-  aprouved(Config.message,Reponse),
-  Reponse = _{message:Reponse}.
->>>>>>> Stashed changes
+list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).

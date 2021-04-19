@@ -34,7 +34,7 @@ function allWall() {
 function allPlayer() {
     let list_player = [];
     list_players.forEach(
-        elem => list_player.push([Math.floor(elem.y/2),elem.x,elem.color]));
+        elem => list_player.push([Math.floor(elem.y/2),parseInt(elem.x),elem.color]));
     return list_player;
 }
 
@@ -44,6 +44,7 @@ function barrPositionChange(wall1, wall2) {
     let listWall2 = allWall();
     listWall2.push([wall1.x, wall1.y, wall1.color, wall1.orientation]);
     const payloadBarr = {
+        type: "barr",
         listWalls: listWall2,
         listPlayers: allPlayer(),
         posPlayer: pos_player,
@@ -52,11 +53,14 @@ function barrPositionChange(wall1, wall2) {
     sendMessage(JSON.stringify(payloadBarr));
 }
 
-function playerPositonChange(x, y, color){
-    let pos_player = [Math.floor(y/2),parseInt(x),color];
+function playerPositonChange(x, y){
+    let pos_player_now = [Math.floor(list_players[tour].y/2),parseInt(list_players[tour].x), list_players[tour].color];
+    let pos_player = [Math.floor(y/2),parseInt(x)];
     const payloadPlayer = {
+        type: 'play',
         listWalls: allWall(),
         listPlayers: allPlayer(),
+        posPlayerNow : pos_player_now,
         posPlayer: pos_player
     };
     sendMessage(JSON.stringify(payloadPlayer))
@@ -117,7 +121,7 @@ $(document).on('click', '.cell', function(e){
   console.log(clicked);
 
   if( $this.hasClass(list_players[tour].color_class) ) return;
-  playerPositonChange(clicked[0], clicked[1], list_players[tour].color);
+  playerPositonChange(clicked[0], clicked[1]);
   $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
     if (arr[row][cell][1] === false) {
         $this.addClass(list_players[tour].color_class);
@@ -125,8 +129,8 @@ $(document).on('click', '.cell', function(e){
         //make current attribute of active true, previous cell - false
         arr[row][cell][1] = !arr[row][cell][1];
         arr[clicked[0]][clicked[1]][1] = false;
-        list_players[tour].x = clicked[0];
-        list_players[tour].y = clicked[1];
+        list_players[tour].x = parseInt(clicked[0]);
+        list_players[tour].y = parseInt(clicked[1]);
       };
       $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ info);
       switch_tour();
