@@ -1,6 +1,7 @@
 
-y(A):- member(A,[0,1,2,3,4,5,6,7,8]).
-x(A):- y(A).
+point(A):- member(A,[0,1,2,3,4,5,6,7,8]).
+y(A):- point(A).
+x(A):- point(A).
 coor(X,Y):- x(X),y(Y).
 
 coorB(X,Y,D):-D = 0 , X < 9 , X > 0, Y < 10 , Y > 0.
@@ -107,9 +108,6 @@ connectedLeft(Z,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z),B is X1-1), A is Y1,D1 is
 
 %-----------------------------------------------------------------------------------------
 
-deuxieme([_,_,T],T).
-renvoie(R,R).
-genListe(T,[T,T,T]).
 
 
 
@@ -210,7 +208,31 @@ allDifference(Lsj,ClIa,Sc,Clcible):-member((X,Y,ClIa),Lsj),member((X1,Y1,Clcible
 
 %objectif : calculer le nombre de pas a faire pour faire un score de +1 
 
+%Le prédicat fondamental doit être vrai si tout déplacement rectiligne utile continu peut amener la victoire, la présence d'un mur sur le chemin doit renvoyer faux. 
+%les seules questions utiles sont alors
+%   Quelle case le pion vise il ?
+%   y a t'il une barrière sur cette COOR ?
+
+%@requires : LSj = liste des Joueurs, LSb = Liste des Barrières , Cl = couleur du pion concerné , X et Y les coor interroger 
+%@return   : vrai ou faux -> voir explication prédicat fondamental  
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"       ,plusGrand(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne haut (bleu)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"       ,plusGrand(X,NewX),member((NewX,Y,_,1),LSb). %je vise la ligne droite (jaune)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "red"        ,plusPetit(Y,NewY),member((X,NewY,_,0),LSb). %je vise la ligne basse (rouge)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen"  ,plusPetit(X,NewX),member((NewX,Y,_,0),LSb). %je vise la ligne gauche (vert)
+
+plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
+plusPetit(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B < A.
+
+
+decalage(LSj,LSb,Cl,X,Y):-member(Cl,["red","blue"]),member((_,Y,Cl),LSj),point(X) ,not(rectiligne(LSb,Cl,X,Y)).
+decalage(LSj,LSb,Cl,X,Y):-member(Cl,["gold","darkgreen"]),member((X,_,Cl),LSj),point(Y),not(rectiligne(LSb,Cl,X,Y)). 
+
 moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)):-distance(Cl,X,Y,Sc),arc3(((X,Y),(X2,Y2)),LSj,LSb),distance(Cl,X2,Y2,Sc2),Sc < Sc2.
 
 road(LSj,LSb,(X,Y,Cl),(X2,Y2)):-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)).
-road(LSj,LSb,(X,Y,Cl),(X2,Y2)):-not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),arc3(((X,Y),(X3,Y3)),LSj,LSb),road(LSj,LSb,(X3,Y3,Cl),(X2,Y2)).
+road(LSj,LSb,(X,Y,Cl),(X2,Y2)):-not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),decalage(LSj,LSb,Cl,X2,Y2).
+
+%road2(LSj,LSb,(X,Y,Cl),(X2,Y2),I,T):-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)).
+%road2(LSj,LSb,(X,Y,Cl),(X2,Y2),I,T):-I2 is I + 1 ,T is I2,not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),arc3(((X,Y),(X3,Y3)),LSj,LSb),road2(LSj,LSb,(X3,Y3,Cl),(X2,Y2),I2,T).
+
+%road(LSj,LSb,(X,Y,Cl),(X2,Y2),T):-road2(LSj,LSb,(X,Y,Cl),(X2,Y2),0,T).
