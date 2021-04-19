@@ -82,10 +82,15 @@ echo(WebSocket) :-
     ws_receive(WebSocket, Message, [format(json)]),
     ( Message.opcode == close
     -> true
-    ; get_response(Message.data, Response),
-      write("Response: "), writeln(Response),
-      ws_send(WebSocket, json(Response)),
-      echo(WebSocket)
+    ; (
+      Message.data.type == "play"
+      -> (get_response_player(Message.data, Response),
+         ws_send(WebSocket, json(Response)),
+         echo(WebSocket));
+         (get_response_chatbot(Message.data, Response),
+         ws_send(WebSocket, json(Response)),
+         echo(WebSocket))
+      )
     ).
 
 %! get_response(+Message, -Response) is det.
@@ -94,15 +99,15 @@ echo(WebSocket) :-
 % client
 
 
-get_response(Message, Response) :-
+get_response_player(Message, Response) :-
   list_list_tuple(Message.listPlayers, LSj),
   list_list_tuple(Message.listWalls, LSb),
   list_tuple(Message.posPlayerNow, PlayerNow),
   list_tuple(Message.posPlayer, PlayerMov),
-  trace, aprouved(LSj,LSb,PlayerNow,PlayerMov),
-  Response = _{message:"true"}.
+  aprouved(LSj,LSb,PlayerNow,PlayerMov)
+  -> Response = _{message:"true"}; Response = _{message:"false"}.
 
-get_response(Message, Response) :-
+get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
 
