@@ -93,6 +93,7 @@ $(document).on('keydown','.console-input', function(event) {
             output('')
         } else {
             const payload = {
+                type: "msg",
                 message: text,
             }
             sendMessage(JSON.stringify(payload))

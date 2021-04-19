@@ -82,28 +82,19 @@ echo(WebSocket) :-
     ws_receive(WebSocket, Message, [format(json)]),
     ( Message.opcode == close
     -> true
-    ; (
-      Message.data.type == "play"
-      -> (
-         write("Vous etes la-bas"),
-         get_response_player(Message.data, Response),
-         ws_send(WebSocket, json(Response)),
-         echo(WebSocket)
-         )
-      ;
-        (
-        write("Vous etes ici"),
-        get_response_chatbot(Message.data, Response),
-        ws_send(WebSocket, json(Response)),
-        echo(WebSocket)
-        )
-      )
+    ; choice(Message.data.type,Message,Response),
+      ws_send(WebSocket, json(Response)),
+      echo(WebSocket)
     ).
 
 %! get_response(+Message, -Response) is det.
 % Pull the message content out of the JSON converted to a prolog dict
 % then add the current time, then pass it back up to be sent to the
 % client
+
+choice("msg",Message,Response):- get_response_chatbot(Message.data,Response).
+choice("play",Message,Response):- get_response_player(Message.data, Response).
+choice("barr",Message,Response):- get_response_barr(Message.data, Response).
 
 
 get_response_player(Message, Response) :-
@@ -118,8 +109,6 @@ get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
 
-get_response(Message, Response) :-
-  Response = _{message:"rien a signaler"}.
 
 list_tuple([A|[]], (A)).
 list_tuple([A|T], (A,B)) :- list_tuple(T, B).
