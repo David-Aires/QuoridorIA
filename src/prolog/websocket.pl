@@ -105,6 +105,14 @@ get_response_player(Message, Response) :-
   aprouved(LSj,LSb,PlayerNow,PlayerMov)
   -> Response = _{message:"true"}; Response = _{message:"false"}.
 
+get_response_barr(Message, Response) :-
+   list_list_tuple(Message.listPlayers, LSj),
+   list_list_tuple(Message.listWalls, LSb),
+   list_tuple(Message.posPlayer, Player),
+   list_tuple(Message.posBarr, Barr),
+   aprouved(LSj,LSb,Player,Barr)
+   -> Response = _{message:"true"}; Response = _{message:"false"}.
+
 get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{message:Solution}.
@@ -116,3 +124,4 @@ list_tuple([A|T], (A,B)) :- list_tuple(T, B).
 list_list_tuple([],[]).
 list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
+list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).
