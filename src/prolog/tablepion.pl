@@ -43,8 +43,8 @@ isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=1,member((B,Y1,_,0),Z),member((X1,A,_,0),Z
 
 %/////////////////////////////////////////////////////////////////////////////
 %vérifie si une barrière ce trouve en bord de map -> correspond à une des conditions d'arret
-isBorderUp(X,Y,D):-D=0,Y=9;D=1,X=9.
-isBorderDown(X,Y,D):-D=0,Y=1;D=1,X=9.
+isBorderUp(X,Y,D):-D=0,Y=8;D=1,X=8.
+isBorderDown(X,Y,D):-D=0,Y=1;D=1,X=1.
 %/////////////////////////////////////////////////////////////////////////////
 
 %/////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 < Y , trianglePos(Y1,X1,Y2,X2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 %
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),not(isLocked(LSb,(X1,Y1,Cl,Or))).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),not(isLocked(LSb,(X1,Y1,_,Or))).
 aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl).
 
 %--------------fonction d'évaluation---------------------
