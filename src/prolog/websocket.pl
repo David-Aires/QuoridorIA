@@ -103,7 +103,7 @@ get_response_player(Message, Response) :-
   list_tuple(Message.posPlayerNow, PlayerNow),
   list_tuple(Message.posPlayer, PlayerMov),
   aprouved(LSj,LSb,PlayerNow,PlayerMov)
-  -> Response = _{message:"true"}; Response = _{message:"false"}.
+  -> Response = _{type:"play",message:"true"}; Response = _{message:"false"}.
 
 get_response_barr(Message, Response) :-
    list_list_tuple(Message.listPlayers, LSj),
@@ -111,11 +111,11 @@ get_response_barr(Message, Response) :-
    list_tuple(Message.posPlayer, Player),
    list_tuple(Message.posBarr, Barr),
    aprouved(LSj,LSb,Player,Barr)
-   -> Response = _{message:"true"}; Response = _{message:"false"}.
+   -> Response = _{type:"barr",message:"true"}; Response = _{message:"false"}.
 
 get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
-  Response = _{message:Solution}.
+  Response = _{type:"msg",message:Solution}.
 
 
 list_tuple([A|[]], (A)).

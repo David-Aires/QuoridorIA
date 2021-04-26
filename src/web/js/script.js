@@ -38,7 +38,7 @@ function allPlayer() {
     return list_player;
 }
 
-function barrPositionChange(wall1, wall2) {
+function barrPositionChange() {
     let pos_barr = [wall2.x, wall2.y, wall2.orientation];
     let pos_player = [Math.floor(list_players[tour].y/2),parseInt(list_players[tour].x),list_players[tour].color];
     let listWall2 = allWall();
@@ -66,6 +66,44 @@ function playerPositonChange(x, y){
     sendMessage(JSON.stringify(payloadPlayer))
 }
 
+function BarrPos(){
+    var info_classe = (event.attr('class'));
+    var info = event.data(info_classe).split('-');
+    if (info_classe == 'border-h') {
+        if (info[1] == '8') {
+            $(event.addClass('blocked').prev('.border-h').addClass('blocked'));
+        } else {
+            $(event.addClass('blocked').next('.border-h').addClass('blocked'));
+        }
+    }
+    else {
+        $(event.addClass('blocked'));
+        if (info[0] == '8') {
+            $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').addClass('blocked');
+        } else {
+            $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
+        }
+    }
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
+    list_players[tour].listWall.push(wall1);
+    list_players[tour].listWall.push(wall2);
+    switch_tour();
+}
+
+function PlayPoss(){
+    $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
+    if (arr[row][cell][1] === false) {
+        $this.addClass(list_players[tour].color_class);
+
+        //make current attribute of active true, previous cell - false
+        arr[row][cell][1] = !arr[row][cell][1];
+        arr[clicked[0]][clicked[1]][1] = false;
+        list_players[tour].x = parseInt(clicked[0]);
+        list_players[tour].y = parseInt(clicked[1]);
+    };
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ info);
+    switch_tour();
+}
 
 var red_player = new Player([],'red','active_red',4,0);
 var blue_player = new Player([],'blue','active_blue',0,8);
@@ -73,6 +111,9 @@ var green_player = new Player([],'darkgreen','active_green',4,16);
 var yellow_player = new Player([],'gold','active_yellow',8,8);
 var list_players = [blue_player,red_player,green_player,yellow_player];
 var tour = 0;
+var event = null;
+var wall1 = null;
+var wall2 = null;
 
 
 const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -122,53 +163,35 @@ $(document).on('click', '.cell', function(e){
 
   if( $this.hasClass(list_players[tour].color_class) ) return;
   playerPositonChange(clicked[0], clicked[1]);
-  $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
-    if (arr[row][cell][1] === false) {
-        $this.addClass(list_players[tour].color_class);
-        
-        //make current attribute of active true, previous cell - false
-        arr[row][cell][1] = !arr[row][cell][1];
-        arr[clicked[0]][clicked[1]][1] = false;
-        list_players[tour].x = parseInt(clicked[0]);
-        list_players[tour].y = parseInt(clicked[1]);
-      };
-      $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ info);
-      switch_tour();
+
 });
 
 // vertical 0, horizontal 1
 $(document).on('click', '.border-v, .border-h', function(e){
-  var info_classe = ($(this).attr('class'));
-  var info = $(this).data(info_classe).split('-');
-  let barrier_ = [parseInt(info[0]),parseInt(info[1])];
-  if (info_classe == 'border-h') {
-    if (info[1] == '8') {
-        Wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
-        Wall2 = new Wall(--barrier_[1], barrier_[0],list_players[tour].color, 1 );
-        $($(this).addClass('blocked').prev('.border-h').addClass('blocked'));
-    } else {
-        Wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
-        Wall2 = new Wall(++barrier_[1], barrier_[0],list_players[tour].color, 1 );
-      $($(this).addClass('blocked').next('.border-h').addClass('blocked'));
+    var info_classe = ($(this).attr('class'));
+    var info = $(this).data(info_classe).split('-');
+    let barrier_ = [parseInt(info[0]),parseInt(info[1])];
+    if (info_classe == 'border-h') {
+        if (info[1] == '8') {
+            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
+            wall2 = new Wall(--barrier_[1], barrier_[0],list_players[tour].color, 1 );
+        } else {
+            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
+            wall2 = new Wall(++barrier_[1], barrier_[0],list_players[tour].color, 1 );
+        }
     }
-  }
-  else {
-    $($(this).addClass('blocked'));
-    if (info[0] == '8') {
-        Wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
-        Wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0 );
-      $('.border-v[data-border-v='+(--info[0])+'-'+info[1]+']').addClass('blocked');
-    } else {
-        Wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
-        Wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );
-      $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
+    else {
+        $(event.addClass('blocked'));
+        if (info[0] == '8') {
+            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
+            wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0 );
+        } else {
+            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
+            wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );
+        }
     }
-  }
-  $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
-  barrPositionChange(Wall1, Wall2);
-  list_players[tour].listWall.push(Wall1);
-  list_players[tour].listWall.push(Wall2);
-  switch_tour();
+    event = $(this);
+    barrPositionChange();
 });
 
 //##################################################################################################################################################################################################
