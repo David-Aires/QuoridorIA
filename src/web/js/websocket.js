@@ -9,8 +9,22 @@ function log(topic, message) {
 
 function wsMessageHandler(event) {
     const payload = JSON.parse(event.data)
-    log("WS Response", "Received message: '" + event.data + "'")
-    output(payload.message)
+    if(payload.message != "false"){
+        switch(payload.type) {
+            case "play" :
+                PlayPoss();
+                break;
+            case "barr" :
+                BarrPos();
+                break;
+            case "msg" :
+                output(payload.message);
+                break;
+        }
+    }
+    else{
+        output("error");
+    }
 }
 
 function sendMessage(message) {
