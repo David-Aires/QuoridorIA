@@ -12,9 +12,11 @@ function wsMessageHandler(event) {
     if(payload.message != "false"){
         switch(payload.type) {
             case "play" :
+                output("coucou play");
                 PlayPoss();
                 break;
             case "barr" :
+                output("coucou barr");
                 BarrPos();
                 break;
             case "msg" :
@@ -23,6 +25,7 @@ function wsMessageHandler(event) {
         }
     }
     else{
+        clicked=[];
         output("error");
     }
 }

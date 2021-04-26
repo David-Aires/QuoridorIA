@@ -101,7 +101,7 @@ function PlayPoss(){
         list_players[tour].x = parseInt(clicked[0]);
         list_players[tour].y = parseInt(clicked[1]);
     };
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ info);
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ clicked);
     switch_tour();
 }
 
@@ -138,7 +138,7 @@ function switch_tour() {
   }
     $("#pos_X").text(list_players[tour].x);
     $("#pos_Y").text(list_players[tour].y);
-    $("#wall").text(list_players[tour].wall);
+    $("#wall").text((10 - list_players[tour].listWall.length)/2);
     clicked = [];
     wall1 = null;
     wall2 = null;
@@ -156,7 +156,7 @@ Action lorsque le joueur souhaite déplacer son pion sur le plateau :
 $(document).on('click', '.cell', function(e){
   //if(tour==3 || tour==2) return;
   event = $(this);
-  var info = $this.data('cell').split('-');
+  var info = event.data('cell').split('-');
   clicked.push(info[0], info[1]);
   console.log(clicked);
 
@@ -166,8 +166,9 @@ $(document).on('click', '.cell', function(e){
 
 // vertical 0, horizontal 1
 $(document).on('click', '.border-v, .border-h', function(e){
-    var info_classe = ($(this).attr('class'));
-    var info = $(this).data(info_classe).split('-');
+    event = $(this);
+    var info_classe = (event.attr('class'));
+    var info = event.data(info_classe).split('-');
     let barrier_ = [parseInt(info[0]),parseInt(info[1])];
     if (info_classe == 'border-h') {
         if (info[1] == '8') {
@@ -179,7 +180,6 @@ $(document).on('click', '.border-v, .border-h', function(e){
         }
     }
     else {
-        $(event.addClass('blocked'));
         if (info[0] == '8') {
             wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
             wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0 );
@@ -188,7 +188,6 @@ $(document).on('click', '.border-v, .border-h', function(e){
             wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );
         }
     }
-    event = $(this);
     barrPositionChange();
 });
 
