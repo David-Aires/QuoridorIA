@@ -92,11 +92,11 @@ function BarrPos(){
 
 function PlayPoss(){
     $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
-    if (arr[row][cell][1] === false) {
-        $this.addClass(list_players[tour].color_class);
+    if (arr[clicked[0]][clicked[1]][1] === false) {
+        event.addClass(list_players[tour].color_class);
 
         //make current attribute of active true, previous cell - false
-        arr[row][cell][1] = !arr[row][cell][1];
+        arr[clicked[0]][clicked[1]][1] = !arr[clicked[0]][clicked[1]][1];
         arr[clicked[0]][clicked[1]][1] = false;
         list_players[tour].x = parseInt(clicked[0]);
         list_players[tour].y = parseInt(clicked[1]);
@@ -114,7 +114,7 @@ var tour = 0;
 var event = null;
 var wall1 = null;
 var wall2 = null;
-
+var clicked = [];
 
 const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
@@ -139,6 +139,10 @@ function switch_tour() {
     $("#pos_X").text(list_players[tour].x);
     $("#pos_Y").text(list_players[tour].y);
     $("#wall").text(list_players[tour].wall);
+    clicked = [];
+    wall1 = null;
+    wall2 = null;
+    event = null;
 }
 
 //##################################################################################################################################################################################################
@@ -151,19 +155,13 @@ Action lorsque le joueur souhaite déplacer son pion sur le plateau :
 
 $(document).on('click', '.cell', function(e){
   //if(tour==3 || tour==2) return;
-  var $this = $(this);
-  var clicked = [];
+  event = $(this);
   var info = $this.data('cell').split('-');
-  var row = info[0];
-  var cell = info[1];
-
-  
-  clicked.push(row, cell);
+  clicked.push(info[0], info[1]);
   console.log(clicked);
 
-  if( $this.hasClass(list_players[tour].color_class) ) return;
+  if( event.hasClass(list_players[tour].color_class) ) return;
   playerPositonChange(clicked[0], clicked[1]);
-
 });
 
 // vertical 0, horizontal 1

@@ -12,7 +12,7 @@ function wsMessageHandler(event) {
     if(payload.message != "false"){
         switch(payload.type) {
             case "play" :
-
+                PlayPoss();
                 break;
             case "barr" :
                 BarrPos();
