@@ -11,7 +11,7 @@ verticalBarriere(X,Y):- barriere(X),y(Y).
 horizontaleBarriere(X,Y):- x(X),barriere(Y).
 
 couleur(M):- member(M,["red","gold","darkgreen","blue"]).
-
+%couleur(M):- member(M,[red,gold,darkgreen,blue]).
 %--------------------------------------------------------------------------------------------
 
 pion(X,Y,M) :- coor(X,Y),couleur(M).                                                        %
@@ -158,8 +158,8 @@ arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X + 1 , coordonnee(X1,Y),not(casper
 arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y - 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
 arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y + 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
 
-arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)).
-arc2(((X,Y),(X1,Y1)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),testMap(LSj),not(member((X1,Y1,_),LSj)).
+arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)).
+arc2(((X,Y),(X1,Y1)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),not(member((X1,Y1,_),LSj)).
 
 coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y>Y1 , Y2 is Y1 -1 , X2 is X1.
 coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y<Y1 , Y2 is Y1 +1 , X2 is X1.
@@ -168,6 +168,8 @@ coorplus((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X<X1 , X2 is X1 +1 , Y2 is Y1.
 
 arc3(((X,Y),(X2,Y2)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),not(casper(X,Y,X2,Y2,LSb)).
 arc3(((X,Y),(X3,Y3)),LSj,LSb):- arc2(((X,Y),(X2,Y2)),LSj,LSb),casper(X,Y,X2,Y2,LSb),diag((X,Y),(X2,Y2),(X3,Y3)).
+
+listeTrajectoire(LS,X,Y,LSj,LSb):-findall((X2,Y2),arc3(((X,Y),(X2,Y2)),LSj,LSb),LS).
 
 trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B - 1.
 trianglePos(A,B,A1,B1):- A1 is A + 1, B1 is B + 1.
@@ -201,20 +203,34 @@ distance(Cl,X,_,Sc):-couleur(Cl), Cl = "gold", Sc is X.
 distance(Cl,X,_,Sc):-couleur(Cl), Cl = "darkgreen", Sc is 8 - X.
 distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "blue", Sc is 8 - Y. 
 
-%calcule la différence de score entre 2 Joeur
-difference((X,Y,Cl),(X1,Y1,Cl1),Diff):- distance(Cl,X,Y,D),distance(Cl1,X1,Y1,D1), Diff is D - D1.
-%renvoie toutes les differences par rapport aux autres joueurs : allDifference([(4,5,"ro"),(4,2,"bl"),(4,5,"ja"),(6,6,"ve")],"ro",Sc,Cl). 
-allDifference(Lsj,ClIa,Sc,Clcible):-member((X,Y,ClIa),Lsj),member((X1,Y1,Clcible),Lsj),not(ClIa = Clcible),difference((X,Y,ClIa),(X1,Y1,Clcible),Sc).
 
-%objectif : calculer le nombre de pas a faire pour faire un score de +1 
+%--------------------------------------------------------------------------------deplacement IA-------------------------------------------------------------------------------------------
+moveIA(LSj,LSb,Cl,MX,MY,C):-assist(LSj,LSb,Cl,MX,MY,_,C).
+assist(LSj,LSb,Cl,MX,MY,L,C):-member((X,Y,Cl),LSj),listeTrajectoire(LSf,X,Y,LSj,LSb),findall(LSO,starter(LSf,LSO,LSb,LSj),LStt),path(LStt,LSb,LSj,MX,MY,Cl,L),length(L,C).
 
-%Le prédicat fondamental doit être vrai si tout déplacement rectiligne utile continu peut amener la victoire, la présence d'un mur sur le chemin doit renvoyer faux. 
-%les seules questions utiles sont alors
-%   Quelle case le pion vise il ?
-%   y a t'il une barrière sur cette COOR ?
+
+path([],[],[],_,_,_,_).
+path(LSt,_,_,MX,MY,Cl,L):-chercheur(LSt,Cl,MX,MY,L),coor(MX,MY),!.
+path(LSt,LSb,LSj,MX,MY,Cl,L):-findall(LSO,rome(LSt,LSO,LSb,LSj),ROAD),fusion(ROAD,B),path(B,LSb,LSj,MX,MY,Cl,L).
+
+
+chercheur(LS,Cl,VX,VY,L):-member(L,LS),member((X,Y),L),distance(Cl,X,Y,Sc),Sc = 8,premier1(L,(VX,VY)),!.
+
+
+starter(LSI,LSO,LSb,LSj):-member((X,Y),LSI),arc3(((X,Y),(X1,Y1)),LSj,LSb),append([(X,Y)],[(X1,Y1)],LSO).
+follower(LSI,LSO,LSb,LSj):-last(LSI,(X,Y)),arc3(((X,Y),(X1,Y1)),LSj,LSb),append(LSI,[(X1,Y1)],LSO).
+rome(LSI,LSO,LSb,LSj):-member(LSIi,LSI),findall(LSOo,follower(LSIi,LSOo,LSb,LSj),LSO).
+
+fusion(LSO,LSI):-findall(Y,(member(T,LSO),member(Y,T)),LSI).
+
+listepoint(LS):-findall((X,Y),coor(X,Y),LS).
+
+premier1([X|_],X).
+
+%--------------------------------------------------------------------------------------Placement MUR IA-------------------------------------------------------------------------------------------------------------------------
 
 %@requires : LSj = liste des Joueurs, LSb = Liste des Barrières , Cl = couleur du pion concerné , X et Y les coor interroger 
-%@return   : vrai ou faux -> voir explication prédicat fondamental  
+%@return   : vrai ou faux -> vrai si il y a un mur devant 
 rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"       ,plusGrand(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne haut (bleu)
 rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"       ,plusGrand(X,NewX),member((NewX,Y,_,1),LSb). %je vise la ligne droite (jaune)
 rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "red"        ,plusPetit(Y,NewY),member((X,NewY,_,0),LSb). %je vise la ligne basse (rouge)
@@ -223,16 +239,26 @@ rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen"  ,plusPetit(X,NewX),member
 plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
 plusPetit(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B < A.
 
+placeMur(LSj,LSb,Cible,Cl,LSA):-member((X,Y,Cible),LSj),dirr(X,Y,X1,Y1),member(Or,[0,1]),not(member((X1,Y1,_,Or),LSb)),append([(X1,Y1,Cl,Or)],LSb,LSA).%,  moveIA(LSj,LSb,Cl,MX,MY,C).
+choixMur(LSj,LSb,Cible,Cl,R):-findall(LSA,placeMur(LSj,LSb,Cible,Cl,LSA),LSbigB),the_worst(LSj,LSbigB,Cible,R).
 
-decalage(LSj,LSb,Cl,X,Y):-member(Cl,["red","blue"]),member((_,Y,Cl),LSj),point(X) ,not(rectiligne(LSb,Cl,X,Y)).
-decalage(LSj,LSb,Cl,X,Y):-member(Cl,["gold","darkgreen"]),member((X,_,Cl),LSj),point(Y),not(rectiligne(LSb,Cl,X,Y)). 
 
-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)):-distance(Cl,X,Y,Sc),arc3(((X,Y),(X2,Y2)),LSj,LSb),distance(Cl,X2,Y2,Sc2),Sc < Sc2.
+the_worst(LSj,LSb,Cible,R):-member(LS,LSb),member((X,Y,Cible),LSj),rectiligne(LS,Cible,X,Y),return(LS,R).
+the_worst(LSj,LSb,Cible,_):-member(LS,LSb),member((X,Y,Cible),LSj),not(rectiligne(LS,Cible,X,Y)).
 
-road(LSj,LSb,(X,Y,Cl),(X2,Y2)):-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)).
-road(LSj,LSb,(X,Y,Cl),(X2,Y2)):-not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),decalage(LSj,LSb,Cl,X2,Y2).
+return(T,T).
 
-%road2(LSj,LSb,(X,Y,Cl),(X2,Y2),I,T):-moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2)).
-%road2(LSj,LSb,(X,Y,Cl),(X2,Y2),I,T):-I2 is I + 1 ,T is I2,not(moveNext(LSj,LSb,(X,Y,Cl),(X2,Y2))),arc3(((X,Y),(X3,Y3)),LSj,LSb),road2(LSj,LSb,(X3,Y3,Cl),(X2,Y2),I2,T).
+dirr(X,Y,X1,Y):-X1 is X +1,coor(X1,Y).
+dirr(X,Y,X1,Y):-X1 is X -1,coor(X1,Y).
+dirr(X,Y,X,Y1):-Y1 is Y +1,coor(X,Y1).
+dirr(X,Y,X,Y1):-Y1 is Y -1,coor(X,Y1).
 
-%road(LSj,LSb,(X,Y,Cl),(X2,Y2),T):-road2(LSj,LSb,(X,Y,Cl),(X2,Y2),0,T).
+%-----------------------------------------------------------------------------------------CHOIX IA--------------------------------------------------------------------------------
+
+%calcule la différence de score entre 2 Joeur
+difference((X,Y,Cl),(X1,Y1,Cl1),Diff):- distance(Cl,X,Y,D),distance(Cl1,X1,Y1,D1), Diff is D - D1.
+%renvoie toutes les differences par rapport aux autres joueurs : allDifference([(4,5,"ro"),(4,2,"bl"),(4,5,"ja"),(6,6,"ve")],"ro",Sc,Cl). 
+allDifference(Lsj,ClIa,Sc,Clcible):-member((X,Y,ClIa),Lsj),member((X1,Y1,Clcible),Lsj),not(ClIa = Clcible),difference((X,Y,ClIa),(X1,Y1,Clcible),Sc).
+
+allbarr(LSb,Cl,C):-couleur(Cl),count(Cl,LSb,C).
+allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
