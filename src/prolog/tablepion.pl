@@ -38,8 +38,8 @@ barr(X,Y,C,D):-coorB(X,Y,D),couleur(C).
 testAllBarr([]).                                                                               
 testAllBarr([(X,Y,C,D)|S]):-coorB(X,Y,D),couleur(C),testAllBarr(S). 
 
-isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=0,member((X1,Y1,_,1),Z),member((B,Y1,_,1),Z).
-isCross(Z,(X,Y,_,D),(X1,Y1,_,D1)):- D=1,member((B,Y1,_,0),Z),member((X1,A,_,0),Z).
+isCross(Z,(X,_,_,D),(X1,Y1,_,_)):- D=0,member((X1,Y1,_,1),Z),member((X,Y1,_,1),Z).
+isCross(Z,(X,Y,_,D),(X1,Y1,_,_)):- D=1,member((X,Y1,_,0),Z),member((X1,Y,_,0),Z).
 
 %/////////////////////////////////////////////////////////////////////////////
 %vérifie si une barrière ce trouve en bord de map -> correspond à une des conditions d'arret
@@ -185,7 +185,9 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 %
 aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),not(isLocked(LSb,(X1,Y1,_,Or))).
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl),win((X1,Y1,Cl)).
+win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc < 8.
+win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc = 8,write("Victoire du pion : "),writeln(Cl).
 
 %--------------fonction d'évaluation---------------------
 
@@ -206,6 +208,7 @@ distance(Cl,_,Y,Sc):-couleur(Cl), Cl = "blue", Sc is 8 - Y.
 
 %--------------------------------------------------------------------------------deplacement IA-------------------------------------------------------------------------------------------
 moveIA(LSj,LSb,Cl,MX,MY,C):-assist(LSj,LSb,Cl,MX,MY,_,C).
+assist(LSj,LSb,Cl,MX,MY,_,1):-member((X,Y,Cl),LSj),listeTrajectoire(LSf,X,Y,LSj,LSb),chercheur2(LSf,Cl,MX,MY,_).
 assist(LSj,LSb,Cl,MX,MY,L,C):-member((X,Y,Cl),LSj),listeTrajectoire(LSf,X,Y,LSj,LSb),findall(LSO,starter(LSf,LSO,LSb,LSj),LStt),path(LStt,LSb,LSj,MX,MY,Cl,L),length(L,C).
 
 
@@ -213,7 +216,7 @@ path([],[],[],_,_,_,_).
 path(LSt,_,_,MX,MY,Cl,L):-chercheur(LSt,Cl,MX,MY,L),coor(MX,MY),!.
 path(LSt,LSb,LSj,MX,MY,Cl,L):-findall(LSO,rome(LSt,LSO,LSb,LSj),ROAD),fusion(ROAD,B),path(B,LSb,LSj,MX,MY,Cl,L).
 
-
+chercheur2(L,Cl,X,Y,_):-member((X,Y),L),distance(Cl,X,Y,Sc),Sc = 8,!.
 chercheur(LS,Cl,VX,VY,L):-member(L,LS),member((X,Y),L),distance(Cl,X,Y,Sc),Sc = 8,premier1(L,(VX,VY)),!.
 
 
@@ -231,10 +234,10 @@ premier1([X|_],X).
 
 %@requires : LSj = liste des Joueurs, LSb = Liste des Barrières , Cl = couleur du pion concerné , X et Y les coor interroger 
 %@return   : vrai ou faux -> vrai si il y a un mur devant 
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"       ,plusGrand(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne haut (bleu)
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"       ,plusGrand(X,NewX),member((NewX,Y,_,1),LSb). %je vise la ligne droite (jaune)
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "red"        ,plusPetit(Y,NewY),member((X,NewY,_,0),LSb). %je vise la ligne basse (rouge)
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen"  ,plusPetit(X,NewX),member((NewX,Y,_,0),LSb). %je vise la ligne gauche (vert)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "red"       ,plusGrand(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne haut (bleu)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"      ,plusGrand(X,NewX),member((NewX,Y,_,1),LSb). %je vise la ligne droite (jaune)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"      ,plusPetit(Y,NewY),member((X,NewY,_,0),LSb). %je vise la ligne basse (rouge)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen" ,plusPetit(X,NewX),member((NewX,Y,_,0),LSb). %je vise la ligne gauche (vert)
 
 plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
 plusPetit(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B < A.
@@ -262,3 +265,16 @@ allDifference(Lsj,ClIa,Sc,Clcible):-member((X,Y,ClIa),Lsj),member((X1,Y1,Clcible
 
 allbarr(LSb,Cl,C):-couleur(Cl),count(Cl,LSb,C).
 allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
+
+%si ennemi est a 2 move de la victoire -> mur
+%si ennemi a 2 move d'avance -> mur 
+
+
+iA(LSj,LSb,Cl,(X,Y,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C > C2 ,choixMur(LSj,LSb,Cible,Cl,R),
+member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)). %2 move d'avance
+
+iA(LSj,LSb,Cl,(X,Y,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
+member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)).%2 move de la victoire
+
+iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
+%aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or))
