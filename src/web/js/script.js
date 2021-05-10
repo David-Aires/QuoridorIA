@@ -66,6 +66,16 @@ function playerPositonChange(x, y){
     sendMessage(JSON.stringify(payloadPlayer))
 }
 
+function playIA(){
+    const payloadPlayer = {
+        type: 'ia',
+        listWalls: allWall(),
+        listPlayers: allPlayer(),
+        color : list_players[tour].color
+    };
+    sendMessage(JSON.stringify(payloadPlayer))
+}
+
 function BarrPos(){
     var info_classe = (event.attr('class'));
     var info = event.data(info_classe).split('-');
@@ -133,6 +143,8 @@ function switch_tour() {
   $( ".card" ).removeClass(current_player).addClass("card--"+list_players[tour].color);
   if (tour == 3 || tour == 2) {
     $(".card__type").text("IA");
+    console.log("salut on entre dans IA");
+    playIA();
   } else {
     $(".card__type").text("Joueur");
   }
@@ -154,7 +166,7 @@ Action lorsque le joueur souhaite déplacer son pion sur le plateau :
 * */
 
 $(document).on('click', '.cell', function(e){
-  //if(tour==3 || tour==2) return;
+  if(tour==3 || tour==2) return;
   event = $(this);
   var info = event.data('cell').split('-');
   clicked.push(info[0], info[1]);
@@ -166,6 +178,7 @@ $(document).on('click', '.cell', function(e){
 
 // vertical 0, horizontal 1
 $(document).on('click', '.border-v, .border-h', function(e){
+    if(tour==3 || tour==2) return;
     event = $(this);
     var info_classe = (event.attr('class'));
     var info = event.data(info_classe).split('-');
@@ -181,8 +194,8 @@ $(document).on('click', '.border-v, .border-h', function(e){
     }
     else {
         if (info[0] == '8') {
-            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
-            wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0 );
+            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color,  0 );
+            wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0);
         } else {
             wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
             wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );

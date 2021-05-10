@@ -95,6 +95,7 @@ echo(WebSocket) :-
 choice("msg",Message,Response):- get_response_chatbot(Message.data,Response).
 choice("play",Message,Response):- get_response_player(Message.data, Response).
 choice("barr",Message,Response):- get_response_barr(Message.data, Response).
+choice("ia",Message,Response):- get_response_IA(Message.data, Response).
 
 
 get_response_player(Message, Response) :-
@@ -113,6 +114,16 @@ get_response_barr(Message, Response) :-
    aprouved(LSj,LSb,Player,Barr)
    -> Response = _{type:"barr",message:"true"}; Response = _{message:"false"}.
 
+get_response_IA(Message, Response) :-
+   list_list_tuple(Message.listPlayers, LSj),
+   list_list_tuple(Message.listWalls, LSb),
+   iA(LSj, LSb, Message.color, Return),
+   tuple_to_string(Return, X, Y, O),
+   O < 2
+   -> Response =_{type:"ia",posX:X, posY:Y, ori:O}; Response = _{type:"ia",possX:X, possY:Y}.
+
+
+
 get_response_chatbot(Message, Response) :-
   quoridoria(Message.message,Solution),
   Response = _{type:"msg",message:Solution}.
@@ -125,3 +136,9 @@ list_list_tuple([],[]).
 list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
 list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).
+
+% tuple_to_string((A,B,C),[A,B]).
+
+tuple_to_string((A,B,C,D),A,B,D).
+tuple_to_string((A,B,C),A,B,2).
+

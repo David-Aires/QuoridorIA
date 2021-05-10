@@ -12,12 +12,15 @@ function wsMessageHandler(event) {
     if(payload.message != "false"){
         switch(payload.type) {
             case "play" :
-                output("coucou play");
                 PlayPoss();
                 break;
             case "barr" :
-                output("coucou barr");
                 BarrPos();
+                break;
+            case "ia":
+                if(payload.ori != null) {
+                    PossBarIa();
+                }
                 break;
             case "msg" :
                 output(payload.message);
