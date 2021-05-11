@@ -27,7 +27,7 @@ testRepet([(X,Y,P)|S]):- not(member((X,Y,_),S)), not(member((_,_,P),S)),testRepe
 %--------------------------------------------------------------------------------------------
 
 
-nbColor(C,LSb):- couleur(C),count(C,LSb,Nb), Nb < 12.
+nbColor(C,LSb):- couleur(C),count(C,LSb,Nb), Nb < 10.
 
 count(_, [], 0).
 count(Num, [(_,_,H,_)|T], X) :- dif(Num,H), count(Num, T, X).
@@ -270,11 +270,10 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 %si ennemi a 2 move d'avance -> mur 
 
 
-iA(LSj,LSb,Cl,(X,Y,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C > C2 ,choixMur(LSj,LSb,Cible,Cl,R),
+iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C < C2 ,choixMur(LSj,LSb,Cible,Cl,R),
 member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)). %2 move d'avance
 
-iA(LSj,LSb,Cl,(X,Y,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
+iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
 member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)).%2 move de la victoire
 
 iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
-%aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or))
