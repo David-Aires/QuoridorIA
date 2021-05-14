@@ -4,8 +4,9 @@ y(A):- point(A).
 x(A):- point(A).
 coor(X,Y):- x(X),y(Y).
 
-coorB(X,Y,D):-D = 0 , X < 9 , X >= 0, Y < 10 , Y >= 0.
-coorB(X,Y,D):-D = 1 , X < 10, X >= 0, Y < 9 ,  Y >= 0.
+pointB(A):- member(A,[0,1,2,3,4,5,6,7]).
+coorB(X,Y,D):-D = 0 ,point(X),pointB(Y). 
+coorB(X,Y,D):-D = 1 ,pointB(X),point(Y). 
 
 verticalBarriere(X,Y):- barriere(X),y(Y).
 horizontaleBarriere(X,Y):- x(X),barriere(Y).
@@ -235,8 +236,8 @@ premier1([X|_],X).
 %@requires : LSj = liste des Joueurs, LSb = Liste des Barrières , Cl = couleur du pion concerné , X et Y les coor interroger 
 %@return   : vrai ou faux -> vrai si il y a un mur devant 
 rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "red"       ,plusGrand(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne haut (bleu)
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"      ,plusGrand(X,NewX),member((NewX,Y,_,1),LSb). %je vise la ligne droite (jaune)
-rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"      ,plusPetit(Y,NewY),member((X,NewY,_,0),LSb). %je vise la ligne basse (rouge)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "gold"      ,plusGrand(X,NewX),member((NewX,Y,_,0),LSb). %je vise la ligne droite (jaune)
+rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "blue"      ,plusPetit(Y,NewY),member((X,NewY,_,1),LSb). %je vise la ligne basse (rouge)
 rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen" ,plusPetit(X,NewX),member((NewX,Y,_,0),LSb). %je vise la ligne gauche (vert)
 
 plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
@@ -251,9 +252,9 @@ the_worst(LSj,LSb,Cible,_):-member(LS,LSb),member((X,Y,Cible),LSj),not(rectilign
 
 return(T,T).
 
-dirr(X,Y,X1,Y):-X1 is X +1,coor(X1,Y).
+dirr(X,Y,X1,Y):-X1 is X ,coor(X1,Y).
 dirr(X,Y,X1,Y):-X1 is X -1,coor(X1,Y).
-dirr(X,Y,X,Y1):-Y1 is Y +1,coor(X,Y1).
+dirr(X,Y,X,Y1):-Y1 is Y ,coor(X,Y1).
 dirr(X,Y,X,Y1):-Y1 is Y -1,coor(X,Y1).
 
 %-----------------------------------------------------------------------------------------CHOIX IA--------------------------------------------------------------------------------
