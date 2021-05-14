@@ -243,7 +243,7 @@ rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen" ,plusPetit(X,NewX),member(
 plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
 plusPetit(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B < A.
 
-placeMur(LSj,LSb,Cible,Cl,LSA):-member((X,Y,Cible),LSj),dirr(X,Y,X1,Y1),member(Or,[0,1]),not(member((X1,Y1,_,Or),LSb)),append([(X1,Y1,Cl,Or)],LSb,LSA).%,  moveIA(LSj,LSb,Cl,MX,MY,C).
+placeMur(LSj,LSb,Cible,Cl,LSA):-member((X,Y,Cible),LSj),arc((X,Y),(X1,Y1),LSb),member(Or,[0,1]),not(member((X1,Y1,_,Or),LSb)),append([(X1,Y1,Cl,Or)],LSb,LSA).%,  moveIA(LSj,LSb,Cl,MX,MY,C).
 choixMur(LSj,LSb,Cible,Cl,R):-findall(LSA,placeMur(LSj,LSb,Cible,Cl,LSA),LSbigB),the_worst(LSj,LSbigB,Cible,R).
 
 
@@ -254,7 +254,7 @@ return(T,T).
 
 dirr(X,Y,X1,Y):-X1 is X ,coor(X1,Y).
 dirr(X,Y,X1,Y):-X1 is X -1,coor(X1,Y).
-dirr(X,Y,X,Y1):-Y1 is Y ,coor(X,Y1).
+dirr(X,Y,X,Y1):-Y1 is Y +1,coor(X,Y1).
 dirr(X,Y,X,Y1):-Y1 is Y -1,coor(X,Y1).
 
 %-----------------------------------------------------------------------------------------CHOIX IA--------------------------------------------------------------------------------
