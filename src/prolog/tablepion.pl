@@ -248,14 +248,10 @@ choixMur(LSj,LSb,Cible,Cl,R):-findall(LSA,placeMur(LSj,LSb,Cible,Cl,LSA),LSbigB)
 
 
 the_worst(LSj,LSb,Cible,R):-member(LS,LSb),member((X,Y,Cible),LSj),rectiligne(LS,Cible,X,Y),return(LS,R).
-the_worst(LSj,LSb,Cible,_):-member(LS,LSb),member((X,Y,Cible),LSj),not(rectiligne(LS,Cible,X,Y)).
+the_worst(LSj,LSb,Cible,_):-member(LS,LSb),member((X,Y,Cible),LSj),not(rectiligne(LS,Cible,X,Y)),the_worst(LSj,LSb,Cible,_).
 
 return(T,T).
 
-dirr(X,Y,X1,Y):-X1 is X ,coor(X1,Y).
-dirr(X,Y,X1,Y):-X1 is X -1,coor(X1,Y).
-dirr(X,Y,X,Y1):-Y1 is Y +1,coor(X,Y1).
-dirr(X,Y,X,Y1):-Y1 is Y -1,coor(X,Y1).
 
 %-----------------------------------------------------------------------------------------CHOIX IA--------------------------------------------------------------------------------
 
