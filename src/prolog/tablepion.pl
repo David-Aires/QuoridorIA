@@ -154,10 +154,10 @@ converteur(Str,Finale):-string_to_list(Str,LS),supprime(91,LS,LS2),supprime(93,L
 coordonnee(X,Y):- member(X,[0,1,2,3,4,5,6,7,8]),member(Y,[0,1,2,3,4,5,6,7,8]).
 
 %verifie si tu traverses un mur
-casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,0),LSb).
-casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,0),LSb).
-casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,1),LSb).
-casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,0),LSb).
 
 arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X - 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
 arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X + 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
@@ -282,16 +282,16 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 
 %iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
 
-iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T).
+iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T),writeln(LSr).
 
 
-decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
+decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),writeln(K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
 decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
 
 plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC > P.
 
 decissionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
-incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)), !.
+incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),!.
  
 sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)):-aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),addorien(X2,Y2,Or,X3,Y3),append(LSb,[(X2,Y2,Cl,Or)],Superlsb),aprouved(LSj,Superlsb,(MX,MY,Cl),(X3,Y3,Or)).
 addorien(X,Y,Or,X1,Y):-Or = 0,X1 is X + 1.
@@ -299,8 +299,8 @@ addorien(X,Y,Or,X,Y1):-Or = 1,Y1 is Y + 1.
 %0 = hori
 
 
-orien(X,_,X1,_,0):- X = X1.
-orien(_,Y,_,Y1,1):- Y = Y1.
+orien(X,_,X1,_,1):- X = X1.
+orien(_,Y,_,Y1,0):- Y = Y1.
 
 incre(X,Y,X1,_,X1,Y):-X1 < X.
 incre(X,Y,_,Y1,X,Y1):- Y1 < Y.
