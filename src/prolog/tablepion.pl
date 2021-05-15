@@ -274,10 +274,29 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 %si ennemi a 2 move d'avance -> mur 
 
 
-iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C < C2 ,choixMur(LSj,LSb,Cible,Cl,R),
-member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("1"). %2 move d'avance
+%iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C < C2 ,choixMur(LSj,LSb,Cible,Cl,R),
+%member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("1"). %2 move d'avance
 
-iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
-member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("2").%2 move de la victoire
+%iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
+%member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("2").%2 move de la victoire
 
-iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
+%iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
+
+iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T).
+
+
+decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
+decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
+
+plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC > P.
+
+decissionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
+incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),!.
+
+orien(X,_,X1,_,0):- X = X1.
+orien(_,Y,_,Y1,1):- Y = Y1.
+
+incre(X,Y,X1,_,X1,Y):-X1 < X.
+incre(X,Y,_,Y1,X,Y1):- Y1 < Y.
+incre(X,Y,X1,_,X,Y):- X < X1.
+incre(X,Y,_,Y1,X,Y):- Y < Y1.
