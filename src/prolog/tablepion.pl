@@ -13,6 +13,11 @@ horizontaleBarriere(X,Y):- x(X),barriere(Y).
 
 couleur(M):- member(M,["red","gold","darkgreen","blue"]).
 %couleur(M):- member(M,[red,gold,darkgreen,blue]).
+
+sandwich(LSb,X,Y,D):-D = 0,Y1 is Y +1,not(member((X,Y1,_,D),LSb)).
+sandwich(LSb,X,Y,D):-D = 1,X1 is X +1,not(member((X1,Y,_,D),LSb)).
+
+
 %--------------------------------------------------------------------------------------------
 
 pion(X,Y,M) :- coor(X,Y),couleur(M).                                                        %
@@ -185,8 +190,8 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 < Y , trianglePos(Y1,X1,Y2,X2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 %
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),not(isLocked(LSb,(X1,Y1,_,Or))).
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl),win((X1,Y1,Cl)).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),testMap(LSj),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),not(isLocked(LSb,(X1,Y1,_,Or))),sandwich(LSb,X1,Y1,Or).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),testMap(LSj),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl),win((X1,Y1,Cl)).
 win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc < 8.
 win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc = 8,write("Victoire du pion : "),writeln(Cl).
 
@@ -243,7 +248,7 @@ rectiligne(LSb,Cl,X,Y):-couleur(Cl), Cl = "darkgreen" ,plusPetit(X,NewX),member(
 plusGrand(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B > A.
 plusPetit(A,B):-member(B,[0,1,2,3,4,5,6,7,8]), B < A.
 
-placeMur(LSj,LSb,Cible,Cl,LSA):-member((X,Y,Cible),LSj),arc((X,Y),(X1,Y1),LSb),member(Or,[0,1]),not(member((X1,Y1,_,Or),LSb)),append([(X1,Y1,Cl,Or)],LSb,LSA).%,  moveIA(LSj,LSb,Cl,MX,MY,C).
+placeMur(LSj,LSb,Cible,Cl,LSA):-member((X,Y,Cible),LSj),arcMur((X,Y),(X1,Y1)),member(Or,[0,1]),not(member((X1,Y1,_,Or),LSb)),append([(X1,Y1,Cl,Or)],LSb,LSA).%,  moveIA(LSj,LSb,Cl,MX,MY,C).
 choixMur(LSj,LSb,Cible,Cl,R):-findall(LSA,placeMur(LSj,LSb,Cible,Cl,LSA),LSbigB),the_worst(LSj,LSbigB,Cible,R).
 
 
@@ -252,7 +257,9 @@ the_worst(LSj,LSb,Cible,_):-member(LS,LSb),member((X,Y,Cible),LSj),not(rectilign
 
 return(T,T).
 
-
+arcMur((X,Y),(X,Y)).
+arcMur((X,Y),(X1,Y)):- X1 is X +1.
+arcMur((X,Y),(X,Y1)):- Y1 is Y +1.
 %-----------------------------------------------------------------------------------------CHOIX IA--------------------------------------------------------------------------------
 
 %calcule la différence de score entre 2 Joeur
