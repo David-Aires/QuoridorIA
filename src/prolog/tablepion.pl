@@ -282,10 +282,10 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 
 %iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
 
-iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T),writeln(LSr).
+iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T).
 
 
-decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),writeln(K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
+decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
 decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
 
 plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC > P.
