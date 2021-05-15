@@ -293,8 +293,8 @@ plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC > P.
 decissionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
 incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),!.
 
-orien(X,_,X1,_,1):- X = X1.
-orien(_,Y,_,Y1,0):- Y = Y1.
+orien(X,_,X1,_,0):- X = X1.
+orien(_,Y,_,Y1,1):- Y = Y1.
 
 incre(X,Y,X1,_,X1,Y):-X1 < X.
 incre(X,Y,_,Y1,X,Y1):- Y1 < Y.
