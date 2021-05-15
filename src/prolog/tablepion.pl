@@ -154,10 +154,10 @@ converteur(Str,Finale):-string_to_list(Str,LS),supprime(91,LS,LS2),supprime(93,L
 coordonnee(X,Y):- member(X,[0,1,2,3,4,5,6,7,8]),member(Y,[0,1,2,3,4,5,6,7,8]).
 
 %verifie si tu traverses un mur
-casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,1),LSb).
-casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,1),LSb).
-casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,0),LSb).
-casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 > Y,Y2 is Y1 - 1 ,member((X1,Y2,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- X = X1 ,Y1 < Y ,member((X1,Y1,_,0),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 > X,X2 is X1 - 1 ,member((X2,Y1,_,1),LSb).
+casper(X,Y,X1,Y1,LSb):- Y = Y1 ,X1 < X ,member((X1,Y1,_,1),LSb).
 
 arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X - 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
 arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X + 1 , coordonnee(X1,Y),not(casper(X,Y,X1,Y,LSb)).
