@@ -291,7 +291,13 @@ decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
 plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC > P.
 
 decissionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
-incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),!.
+incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)), !.
+ 
+sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)):-aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),addorien(X2,Y2,Or,X3,Y3),append(LSb,[(X2,Y2,Cl,Or)],Superlsb),aprouved(LSj,Superlsb,(MX,MY,Cl),(X3,Y3,Or)).
+addorien(X,Y,Or,X1,Y):-Or = 0,X1 is X + 1.
+addorien(X,Y,Or,X,Y1):-Or = 1,Y1 is Y + 1.
+%0 = hori
+
 
 orien(X,_,X1,_,0):- X = X1.
 orien(_,Y,_,Y1,1):- Y = Y1.
