@@ -164,7 +164,7 @@ arc((X,Y),(X1,Y),LSb):-coordonnee(X,Y),X1 is X + 1 , coordonnee(X1,Y),not(casper
 arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y - 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
 arc((X,Y),(X,Y1),LSb):-coordonnee(X,Y),Y1 is Y + 1 , coordonnee(X,Y1),not(casper(X,Y,X,Y1,LSb)).
 
-arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)).
+arc2(((X,Y),(X2,Y2)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),member((X1,Y1,_),LSj),coorplus((X,Y),(X1,Y1),(X2,Y2)),not(member((X2,Y2,_),LSj)).
 arc2(((X,Y),(X1,Y1)),LSj,LSb):-arc((X,Y),(X1,Y1),LSb),not(member((X1,Y1,_),LSj)).
 
 coorplus((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y>Y1 , Y2 is Y1 -1 , X2 is X1.
@@ -275,9 +275,9 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 
 
 iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-moveIA(LSj,LSb,Cl,_,_,C),allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C2 is C1 - 1,C < C2 ,choixMur(LSj,LSb,Cible,Cl,R),
-member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)). %2 move d'avance
+member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("1"). %2 move d'avance
 
 iA(LSj,LSb,Cl,(X1,Y1,Cl1,Or)):-allMove(LSj,LSb,C1,Cible),not(Cl = Cible),C1 < 3,choixMur(LSj,LSb,Cible,Cl,R),
-member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)).%2 move de la victoire
+member((X,Y,Cl),LSj),premier1(R,(X1,Y1,Cl1,Or)),aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)),writeln("2").%2 move de la victoire
 
 iA(LSj,LSb,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),member((X1,Y1,Cl),LSj),aprouved(LSj,LSb,(X1,Y1,Cl),(X,Y)).
