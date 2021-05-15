@@ -296,7 +296,7 @@ incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),aprouved(LSj,L
 orien(X,_,X1,_,1):- X = X1.
 orien(_,Y,_,Y1,0):- Y = Y1.
 
-incre(X,Y,X1,_,X1,Y):-X1 < X.
-incre(X,Y,_,Y1,X,Y1):- Y1 < Y.
-incre(X,Y,X1,_,X,Y):- X < X1.
-incre(X,Y,_,Y1,X,Y):- Y < Y1.
+incre(X,Y,X1,_,X1,Y):-X < X1.
+incre(X,Y,_,Y1,X,Y1):- Y < Y1.
+incre(X,Y,X1,_,X,Y):- X1 < X.
+incre(X,Y,_,Y1,X,Y):- Y1 < Y.
