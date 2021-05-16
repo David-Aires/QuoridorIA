@@ -93,9 +93,12 @@ $(document).on('keydown','.console-input', function(event) {
             output('')
         } else {
             const payload = {
-                type: "msg",
-                message: text,
-            }
+                type: 'msg',
+                listWalls: allWall(),
+                listPlayers: allPlayer(),
+                color : list_players[tour].color,
+                message: text
+            };
             sendMessage(JSON.stringify(payload))
         }
     }

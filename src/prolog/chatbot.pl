@@ -1,5 +1,6 @@
 :- use_module(library(lists)).
 
+
 /* --------------------------------------------------------------------- */
 /*                                                                       */
 /*        PRODUIRE_REPONSE(L_Mots,L_Lignes_reponse) :                    */
@@ -24,17 +25,17 @@
 
 /*                      !!!    A MODIFIER   !!!                          */
 
-produire_reponse([fin],[L1]) :-
+produire_reponse([fin],[L1],_) :-
    L1 = [merci, de, m, '\'', avoir, consulte], !.    
 
-produire_reponse(L,Rep) :-
+produire_reponse(L,Rep,Input) :-
 %   write(L),
    mclef(M,_), member(M,L),
-   clause(regle_rep(M,_,Pattern,Rep),Body),
+   clause(regle_rep(M,_,Pattern,Rep,Input),Body),
    match_pattern(Pattern,L),
    call(Body), !.
 
-produire_reponse(_,[L1,L2, L3]) :-
+produire_reponse(_,[L1,L2, L3],_) :-
    L1 = [je, ne, sais, pas, '.'],
    L2 = [les, etudiants, vont, 'm\'aider', '.' ],
    L3 = ['vous le verrez !'].
@@ -77,6 +78,7 @@ nb_barriere_par_joueur(5).
 % ----------------------------------------------------------------%
 
 mclef(commence,10).
+mclef(coup,10).
 mclef(barriere,5).
 mclef(barrieres,5).
 mclef(sauter,10).
@@ -87,18 +89,19 @@ mclef(rouge,15).
 mclef(vert,15).
 mclef(jaune,15).
 
+
 % ----------------------------------------------------------------%
 
 regle_rep(commence,1,
   [ qui, commence, le, jeu ],
   [ [ "c'est", au, pion, bleu, de, commencer ],
-    [ puis, aux, pions, "rouge," , vert, et, "jaune." ] ] ).
+    [ puis, aux, pions, "rouge," , vert, et, "jaune." ] ],_).
 
 % ----------------------------------------------------------------%
 
 regle_rep(barrieres,5,
   [ [ combien ], 3, [ barrieres ], 5, [ debut, du, jeu ] ],
-  [ [ vous, disposez, de, X, "barrieres." ] ]) :-
+  [ [ vous, disposez, de, X, "barrieres." ] ],_) :-
 
      nb_barriere_par_joueur(X).
 
@@ -107,26 +110,34 @@ regle_rep(barrieres,5,
 regle_rep(sauter,6,
    [ puisje, sauter, audessus, dun, pion],
    [  ["oui,", "s'il", "n'est", pas, suivi, "d'un", autre, pion, ou,
-       "d'une", "barriere."]]).
+       "d'une", "barriere."]],_).
 
 % ----------------------------------------------------------------%
 
 regle_rep(deplacer,7,
    [ puisje, deplacer, une, barriere, placee],
-   [ ["non."] ]).
+   [ ["non."] ],_).
 
 % ----------------------------------------------------------------%
 
 regle_rep(placer,9,
    [ puisje, placer, une, barriere, ou, je, veux],
    [  [en, principe, oui, mais, vous, ne, pouvez, pas, enfermer],
-      [un, pion, "adverse."] ]).
+      [un, pion, "adverse."] ],_).
 
 % ----------------------------------------------------------------%
+coup((A,B,_,D),Response):- Response = [posez, une, barriere, en, B, ",",A, oriente, D ], !.
+coup((A,B,_),Response):- B1 is 8-B ,Response = [deplacez, vous, en, A,",", B1], !.
 
-regle_rep(bleu,8,
-   [je, joue, avec, le, pion, bleu, quel, coup, me, conseillezvous],
-   [ ["bleu-E2"] ]).
+
+regle_rep(coup,8,
+   [ quel, coup, me, conseillestu],
+   [Response],Input):-
+   list_list_tuple(Input.listPlayers, LSj),
+   list_list_tuple(Input.listWalls, LSb),
+   iA(LSj, LSb, Input.color, Return),
+   coup(Return,Response).
+
 
 % ----------------------------------------------------------------%
 
@@ -325,13 +336,32 @@ capitalize([H1|T], [H2|T]):-
 
 /* --------------------------------------------------------------------- */
 /*                                                                       */
+/*                   Conversion list to tuple                            */
+/*                                                                       */
+/* --------------------------------------------------------------------- */
+list_tuple([A|[]], (A)).
+list_tuple([A|T], (A,B)) :- list_tuple(T, B).
+
+list_list_tuple([],[]).
+list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
+list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
+list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).
+
+% tuple_to_string((A,B,C),[A,B]).
+
+tuple_to_string((A,B,_,D),A,B,D).
+tuple_to_string((A,B,_),A,B,2).
+
+
+/* --------------------------------------------------------------------- */
+/*                                                                       */
 /*                         BOUCLE PRINCIPALE                             */
 /*                                                                       */
 /* --------------------------------------------------------------------- */
 
 quoridoria(Input,Solution) :-
-    lire_question(L_Mots,Input),
-    produire_reponse(L_Mots,L_ligne_reponse),
+    lire_question(L_Mots,Input.message),
+    produire_reponse(L_Mots,L_ligne_reponse,Input),
     get_list_string(L_ligne_reponse,Txt),
     atomic_list_concat(Txt,Solution).
 

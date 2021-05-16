@@ -19,6 +19,7 @@
 :- use_module(library(http/http_path)).
 :- use_module(library(http/http_server_files)).
 :- use_module(library(lists)).
+:- discontiguous echo_server:regle_rep/5.
 :- include('chatbot.pl').
 :- include('tablepion.pl').
 
@@ -124,20 +125,9 @@ get_response_IA(Message, Response) :-
 
 
 get_response_chatbot(Message, Response) :-
-  quoridoria(Message.message,Solution),
+  quoridoria(Message,Solution),
   Response = _{type:"msg",message:Solution}.
 
 
-list_tuple([A|[]], (A)).
-list_tuple([A|T], (A,B)) :- list_tuple(T, B).
 
-list_list_tuple([],[]).
-list_list_tuple([[A,B]|T], [(A, B)|Y]) :- list_list_tuple(T, Y).
-list_list_tuple([[A,B,C]|T], [(A,B,C)|Y]) :- list_list_tuple(T, Y).
-list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).
-
-% tuple_to_string((A,B,C),[A,B]).
-
-tuple_to_string((A,B,_,D),A,B,D).
-tuple_to_string((A,B,_),A,B,2).
 
