@@ -287,7 +287,10 @@ iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LS
 
 
 decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-nbColor(Cl,LSb),member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decisionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
-decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
+decissionIA(LSj,LSb,_,Cl,(X1,Y1,Cl1)):-moveIA(LSj,LSb,Cl,X,Y,_),decisionMouvement(Cl,X,Y,(X1,Y1,Cl1)),!.
+
+decisionMouvement(Cl,X,Y,(X,Y," Victoire ^^")):-distance(Cl,X,Y,Sc),Sc = 8.
+decisionMouvement(Cl,X,Y,(X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc < 8.
 
 plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC-1 > P.
 
