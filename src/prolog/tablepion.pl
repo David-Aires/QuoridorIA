@@ -189,7 +189,7 @@ diag((X,Y),(X1,Y1),(X2,Y2)):- X = X1 , Y1 < Y , trianglePos(Y1,X1,Y2,X2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 > X , triangleNeg(X1,Y1,X2,Y2).
 diag((X,Y),(X1,Y1),(X2,Y2)):- Y = Y1 , X1 < X , trianglePos(X1,Y1,X2,Y2).
 %
-aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),testMap(LSj),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),append(LSb,[(X1,Y1,Cl,Or)],LSbb),not(isLocked(LSbb,(X1,Y1,_,Or))),sandwich(LSb,X1,Y1,Or).
+aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1,Or)):-pion(X,Y,Cl),barr(X1,Y1,Cl,Or),testMap(LSj),member((X,Y,Cl),LSj),testAllBarr(LSb),nbColor(Cl,LSb),not(member((X1,Y1,_,Or),LSb)),append(LSb,[(X1,Y1,Cl,Or)],LSbb),not(isLocked(LSbb,(X1,Y1,_,Or))).
 aprouved(LSj,LSb,(X,Y,Cl),(X1,Y1)):-pion(X,Y,Cl),not(barr(X1,Y1,Cl,5)),testMap(LSj),member((X,Y,Cl),LSj),arc3(((X,Y),(X1,Y1)),LSj,LSb),pion(X1,Y1,Cl),win((X1,Y1,Cl)).
 win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc < 8.
 win((X,Y,Cl)):-distance(Cl,X,Y,Sc),Sc = 8,write("Victoire du pion : "),writeln(Cl).
