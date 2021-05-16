@@ -8,7 +8,7 @@ function log(topic, message) {
 }
 
 function wsMessageHandler(event) {
-    const payload = JSON.parse(event.data)
+    const payload = JSON.parse(event.data);
     if(payload.message != "false"){
         switch(payload.type) {
             case "play" :
@@ -18,8 +18,16 @@ function wsMessageHandler(event) {
                 BarrPos();
                 break;
             case "ia":
-                if(payload.ori != null) {
-                    PossBarIa();
+                var x = parseInt(payload.posX);
+                var y = parseInt(payload.posY);
+                console.log("type: "+payload.type);
+                console.log("Back x: "+ x);
+                console.log("Back y: "+y);
+                if(payload.ori < 2) {
+                    console.log("orientation:"+payload.ori);
+                    BarrPosIA(x,y,payload.ori);
+                } else {
+                    PlayPosIA(x,y);
                 }
                 break;
             case "msg" :
@@ -29,8 +37,34 @@ function wsMessageHandler(event) {
     }
     else{
         clicked=[];
-        output("error");
+        Toast.fire({
+            icon: 'error',
+            title: 'Mouvement impossible !'
+        })
     }
+}
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    iconColor: 'white',
+    customClass: {
+        popup: 'colored-toast'
+    },
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+});
+
+function wsReconnect(e) {
+    console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+    setTimeout(function() {
+        openWebSocket();
+    }, 1000);
 }
 
 function sendMessage(message) {
@@ -45,6 +79,9 @@ function openWebSocket() {
         log("WS", error)
     }
     connection.onmessage = wsMessageHandler
+    connection.onclose = wsReconnect
+
+
     return connection
 }
 

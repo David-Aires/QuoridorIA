@@ -143,3 +143,18 @@ img {
 	width: 370px;
 }
 
+.colored-toast .swal2-title {
+	color: white;
+}
+
+.colored-toast .swal2-close {
+	color: white;
+}
+
+.colored-toast .swal2-content {
+	color: white;
+}
+
+.colored-toast.swal2-icon-error {
+	background-color: #f27474 !important;
+}

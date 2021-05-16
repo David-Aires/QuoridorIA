@@ -50,11 +50,11 @@ isCross(Z,(X,Y,_,D),(X1,Y1,_,_)):- D=1,member((X,Y1,_,0),Z),member((X1,Y,_,0),Z)
 %/////////////////////////////////////////////////////////////////////////////
 %vérifie si une barrière ce trouve en bord de map -> correspond à une des conditions d'arret
 isBorderUp(X,Y,D):-D=0,Y=8;D=1,X=8.
-isBorderDown(X,Y,D):-D=0,Y=1;D=1,X=1.
+isBorderDown(X,Y,D):-D=0,Y=0;D=1,X=0.
 %/////////////////////////////////////////////////////////////////////////////
 
 %/////////////////////////////////////////////////////////////////////////////
-%prédicat de lancement de vérification des barrière 
+%prédicat de lancement de vérification des barrière
 %(Z= liste des barrières, (X=abscisses,Y=ordonée,_=couleurs,D=direction)=dernière barrière ajouté, (XO,YO,_,DO)=atome permettant de remonter les résultats)
 
 isLocked(Z,(X,Y,_,D)):- isLocked1(Z,(X,Y,_,D),(X,Y,_,D)),isLocked2(Z,(X,Y,_,D),(X,Y,_,D)).
@@ -103,10 +103,10 @@ connectedDown(Z,X1,Y1,B,A,D,D1):-(member((X1,A,_,D),Z),A is Y1-1), B is X1,D1 is
 connectedLeftUp(Z,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z), B is X1, A is Y1,D1 is 1.
 connectedRightUp(Z,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z),A is Y1, B is X1+1,D1 is 1.
 connectedLeftDown(Z,X1,Y1,B,A,D,D1):-D=0,member((B,Y1,_,1),Z), B is X1-1, A is Y1,D1 is 1.
-connectedRightDown(Z,X1,Y1,B,A,D,D1):-D=0,member((X1,Y1,_,1),Z),A is Y1, B is X1,D1 is 1.
-connectedUpLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((B,Y1,_,0),Z), B is X1-1, A is Y1,D1 is 0.
-connectedUpRight(Z,X1,Y1,B,A,D,D1):-D=1,(member((B,Y1,_,0),Z),B is X1), A is Y1,D1 is 0.
-connectedDownLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((X1,A,_,0),Z), B is X1, A is Y1-1,D1 is 0.
+connectedRightDown(Z,X1,Y1,B,A,D,D1):-D=0,member((B,A,_,1),Z),A is Y1-1, B is X1+1,D1 is 1.
+connectedUpLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((B,Y1,_,0),Z), B is X1, A is Y1,D1 is 0.
+connectedUpRight(Z,X1,Y1,B,A,D,D1):-D=1,(member((B,A,_,0),Z),B is X1), A is Y1+1,D1 is 0.
+connectedDownLeft(Z,X1,Y1,B,A,D,D1):-D=1,member((B,A,_,0),Z), B is X1-1, A is Y1,D1 is 0.
 connectedDownRight(Z,X1,Y1,B,A,D,D1):-D=1,member((X1,Y1,_,0),Z),B is X1, A is Y1,D1 is 0.
 connectedRight(Z,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z),B is X1+1), A is Y1,D1 is 1.
 connectedLeft(Z,X1,Y1,B,A,D,D1):-(member((B,Y1,_,D),Z),B is X1-1), A is Y1,D1 is 1.

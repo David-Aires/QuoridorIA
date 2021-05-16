@@ -30,6 +30,28 @@ function allWall() {
     return list_wall;
 }
 
+function printWin() {
+    console.log("win");
+}
+
+function winCondition() {
+    switch (list_players[tour].color) {
+        case "red":
+            if(list_players[tour].y == 8 ) printWin();
+            break
+        case "gold":
+            if(list_players[tour].x == 16 ) printWin();
+            break
+        case "blue":
+            if(list_players[tour].y == 0 ) printWin();
+            break
+        case "darkgreen":
+            if(list_players[tour].x == 0 ) printWin();
+            break
+    }
+
+}
+
 // très très gros Fix. demandez explication à David ou Sean si besoin d'explication
 function allPlayer() {
     let list_player = [];
@@ -76,6 +98,61 @@ function playIA(){
     sendMessage(JSON.stringify(payloadPlayer))
 }
 
+function BarrPosIA(x,y,o) {
+    var position = conversionBarr(x,y,o);
+    console.log("front x: "+ position[0]);
+    console.log("front y: "+ position[1]);
+    if (o == 1) {
+        $('.border-h[data-border-h='+position[0]+'-'+position[1]+']').addClass('blocked');
+        if (y == 8) {
+            $('.border-h[data-border-h='+position[0]+'-'+(--position[1])+']').addClass('blocked');
+            wall1 = new Wall(x,y,list_players[tour].color, o );
+            wall2 = new Wall(--x,y,list_players[tour].color, o );
+        } else {
+            $('.border-h[data-border-h='+position[0]+'-'+(++position[1])+']').addClass('blocked');
+            wall1 = new Wall(x,y,list_players[tour].color, o );
+            wall2 = new Wall(++x, y,list_players[tour].color, o );
+        }
+    }
+    else {
+        $('.border-v[data-border-v='+position[1]+'-'+position[0]+']').addClass('blocked');
+        if (x == 8) {
+            $('.border-v[data-border-v='+(++position[1])+'-'+position[0]+']').addClass('blocked');
+            wall1 = new Wall(x,y,list_players[tour].color, o );
+            wall2 = new Wall(x, ++y,list_players[tour].color, o );
+        } else {
+            $('.border-v[data-border-v='+(--position[1])+'-'+position[0]+']').addClass('blocked');
+            wall1 = new Wall(x,y,list_players[tour].color, o );
+            wall2 = new Wall(x,--y,list_players[tour].color, o );
+        }
+    }
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ position[0]+"-"+position[1]);
+    list_players[tour].listWall.push(wall1);
+    list_players[tour].listWall.push(wall2);
+    switch_tour();
+}
+
+function conversionToFront(x,y,o) {
+    var x_ =0;
+    if(o=="red" || o=="blue" ) {
+        x_ = x;
+    } else {
+        x_ = x*2
+    }
+    return [x_,y];
+}
+
+function conversionBarr(x,y,o) {
+    var x_ = 0;
+    if(o==1) {
+        x_ = y;
+        y = x;
+    } else {
+        x_ = (x*2)+1;
+    }
+    return [x_,y];
+}
+
 function BarrPos(){
     var info_classe = (event.attr('class'));
     var info = event.data(info_classe).split('-');
@@ -115,10 +192,24 @@ function PlayPoss(){
     switch_tour();
 }
 
-var red_player = new Player([],'red','active_red',4,0);
-var blue_player = new Player([],'blue','active_blue',0,8);
+function PlayPosIA(x,y){
+    var position = conversionToFront(x,y,list_players[tour].color);
+    console.log("front x: "+ position[0]);
+    console.log("front y: "+ position[1]);
+    $("."+list_players[tour].color_class).removeClass(list_players[tour].color_class);
+    $(".cell[data-cell="+position[1]+"-"+position[0]+"]").addClass(list_players[tour].color_class);
+
+    //make current attribute of active true, previous cell - false
+    list_players[tour].x = position[1];
+    list_players[tour].y = position[0];
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ x+"-"+y);
+    switch_tour();
+}
+
+var red_player = new Player([],'red','active_red',0,8);
+var blue_player = new Player([],'blue','active_blue',8,8);
 var green_player = new Player([],'darkgreen','active_green',4,16);
-var yellow_player = new Player([],'gold','active_yellow',8,8);
+var yellow_player = new Player([],'gold','active_yellow',4,0);
 var list_players = [blue_player,red_player,green_player,yellow_player];
 var tour = 0;
 var event = null;
@@ -185,24 +276,26 @@ $(document).on('click', '.border-v, .border-h', function(e){
     let barrier_ = [parseInt(info[0]),parseInt(info[1])];
     if (info_classe == 'border-h') {
         if (info[1] == '8') {
-            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
-            wall2 = new Wall(--barrier_[1], barrier_[0],list_players[tour].color, 1 );
+            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1);
+            wall2 = new Wall(--barrier_[1], barrier_[0],list_players[tour].color, 1);
         } else {
-            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1 );
-            wall2 = new Wall(++barrier_[1], barrier_[0],list_players[tour].color, 1 );
+            wall1 = new Wall(barrier_[1],barrier_[0],list_players[tour].color, 1);
+            wall2 = new Wall(++barrier_[1], barrier_[0],list_players[tour].color, 1);
         }
     }
     else {
         if (info[0] == '8') {
-            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color,  0 );
+            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color,  0);
             wall2 = new Wall((Math.floor(barrier_[1]/2)),--barrier_[0],list_players[tour].color, 0);
         } else {
-            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0 );
-            wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0 );
+            wall1 = new Wall((Math.floor(barrier_[1]/2)),barrier_[0],list_players[tour].color, 0);
+            wall2 = new Wall((Math.floor(barrier_[1]/2)),++barrier_[0],list_players[tour].color, 0);
         }
     }
     barrPositionChange();
 });
+
+
 
 //##################################################################################################################################################################################################
 /*
@@ -262,10 +355,10 @@ Affichage du plateau lors du chargement de la page & placement des positions de 
 */
 $( document ).ready(function() {
     $('.app').append(html)
-    $('span[data-cell="0-8"]').addClass('active_blue');
-    $('span[data-cell="4-0"]').addClass('active_red');
+    $('span[data-cell="8-8"]').addClass('active_blue');
+    $('span[data-cell="0-8"]').addClass('active_red');
     $('span[data-cell="4-16"]').addClass('active_green');
-    $('span[data-cell="8-8"]').addClass('active_yellow');
+    $('span[data-cell="4-0"]').addClass('active_yellow');
 });
 
 

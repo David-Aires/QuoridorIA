@@ -119,8 +119,7 @@ get_response_IA(Message, Response) :-
    list_list_tuple(Message.listWalls, LSb),
    iA(LSj, LSb, Message.color, Return),
    tuple_to_string(Return, X, Y, O),
-   O < 2
-   -> Response =_{type:"ia",posX:X, posY:Y, ori:O}; Response = _{type:"ia",possX:X, possY:Y}.
+   Response =_{type:"ia",posX:X, posY:Y, ori:O}.
 
 
 
@@ -139,6 +138,6 @@ list_list_tuple([[A,B,C,D]|T], [(A,B,C,D)|Y]) :- list_list_tuple(T, Y).
 
 % tuple_to_string((A,B,C),[A,B]).
 
-tuple_to_string((A,B,C,D),A,B,D).
-tuple_to_string((A,B,C),A,B,2).
+tuple_to_string((A,B,_,D),A,B,D).
+tuple_to_string((A,B,_),A,B,2).
 
