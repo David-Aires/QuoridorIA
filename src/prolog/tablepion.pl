@@ -285,12 +285,13 @@ allMove(LSj,LSb,C,Cl):-couleur(Cl),moveIA(LSj,LSb,Cl,_,_,C).
 iA(LSj,LSb,Cl,T):-findall((C,Cl1),allMove(LSj,LSb,C,Cl1),LSr),decissionIA(LSj,LSb,LSr,Cl,T).
 
 
-decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decissionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
+
+decissionIA(LSj,LSb,LSr,Cl,(X,Y,Cl,D)):-nbColor(Cl,LSb),member((Sc,Cl),LSr),plusCourt(LSr,Sc,_),findall(N,plusCourt(LSr,Sc,N),K),decisionMurale(LSj,LSb,K,Cl,(X,Y,D)),!.
 decissionIA(LSj,LSb,_,Cl,(X,Y,Cl)):-moveIA(LSj,LSb,Cl,X,Y,_),!.
 
 plusCourt(LSr,SC,Cible):-member((P,Cible),LSr),SC-1 > P.
 
-decissionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
+decisionMurale(LSj,LSb,LSr,Cl,(X2,Y2,Or)):-member(CiblePoten,LSr),member((X,Y,CiblePoten),LSj),moveIA(LSj,LSb,CiblePoten,X1,Y1,_),
 incre(X,Y,X1,Y1,X2,Y2),orien(X,Y,X1,Y1,Or),member((MX,MY,Cl),LSj),sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),!.
  
 sousaprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)):-aprouved(LSj,LSb,(MX,MY,Cl),(X2,Y2,Or)),addorien(X2,Y2,Or,X3,Y3),append(LSb,[(X2,Y2,Cl,Or)],Superlsb),aprouved(LSj,Superlsb,(MX,MY,Cl),(X3,Y3,Or)).
