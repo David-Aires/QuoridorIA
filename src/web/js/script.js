@@ -30,24 +30,21 @@ function allWall() {
     return list_wall;
 }
 
-function printWin() {
-    console.log("win");
-}
 
 function winCondition() {
     switch (list_players[tour].color) {
         case "red":
-            if(list_players[tour].y == 8 ) printWin();
-            break
+            if(list_players[tour].x == 8 ) printWin();
+            break;
         case "gold":
-            if(list_players[tour].x == 16 ) printWin();
-            break
+            if(list_players[tour].y == 16 ) printWin();
+            break;
         case "blue":
-            if(list_players[tour].y == 0 ) printWin();
-            break
-        case "darkgreen":
             if(list_players[tour].x == 0 ) printWin();
-            break
+            break;
+        case "darkgreen":
+            if(list_players[tour].y == 0 ) printWin();
+            break;
     }
 
 }
@@ -126,7 +123,7 @@ function BarrPosIA(x,y,o) {
             wall2 = new Wall(x,--y,list_players[tour].color, o );
         }
     }
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ position[0]+"-"+position[1]);
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ x+","+y);
     list_players[tour].listWall.push(wall1);
     list_players[tour].listWall.push(wall2);
     switch_tour();
@@ -171,7 +168,7 @@ function BarrPos(){
             $('.border-v[data-border-v='+(++info[0])+'-'+info[1]+']').addClass('blocked');
         }
     }
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ info);
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Barrier to "+ (Math.floor(info[1]/2))+","+info[0]);
     list_players[tour].listWall.push(wall1);
     list_players[tour].listWall.push(wall2);
     switch_tour();
@@ -188,7 +185,7 @@ function PlayPoss(){
         list_players[tour].x = parseInt(clicked[0]);
         list_players[tour].y = parseInt(clicked[1]);
     };
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ clicked);
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ (Math.floor( clicked[1]/2))+","+clicked[0]);
     switch_tour();
 }
 
@@ -202,7 +199,7 @@ function PlayPosIA(x,y){
     //make current attribute of active true, previous cell - false
     list_players[tour].x = position[1];
     list_players[tour].y = position[0];
-    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ x+"-"+y);
+    $('#movement').append("<div><b style='color:"+ list_players[tour].color+"'>Player :</b> Move to "+ x+","+y);
     switch_tour();
 }
 
@@ -222,6 +219,7 @@ const ANIM_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationen
 //##################################################################################################################################################################################################
 
 function switch_tour() {
+    winCondition();
   tour++;
   if(tour == 4) tour = 0;
   let current_player = $(".card").attr("class").split(' ')[1];
