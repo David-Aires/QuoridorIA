@@ -78,7 +78,6 @@ nb_barriere_par_joueur(5).
 % ----------------------------------------------------------------%
 
 mclef(commence,10).
-mclef(coup,10).
 mclef(barriere,5).
 mclef(barrieres,5).
 mclef(sauter,10).
@@ -88,6 +87,7 @@ mclef(bleu,15).
 mclef(rouge,15).
 mclef(vert,15).
 mclef(jaune,15).
+mclef(coup,15).
 
 
 % ----------------------------------------------------------------%
